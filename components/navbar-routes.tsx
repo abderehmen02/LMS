@@ -26,6 +26,7 @@ export const NavbarRoutes = () => {
         </div>
       )}
       <div className="flex gap-x-2 ml-auto">
+        <UserButton afterSignOutUrl="/" />
         {isTeacherPage || isCoursePage ? (
           <Link href="/">
             <Button size="sm" variant="ghost">
@@ -40,10 +41,7 @@ export const NavbarRoutes = () => {
             </Button>
           </Link>
         ) : null}
-        <UserButton
-          afterSignOutUrl="/"
-        />
       </div>
     </>
-  )
-}
+  );
+};
