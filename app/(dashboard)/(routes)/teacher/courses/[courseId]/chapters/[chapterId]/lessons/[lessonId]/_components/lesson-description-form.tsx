@@ -8,7 +8,7 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Chapter } from "@prisma/client";
+import { Lesson } from "@prisma/client";
 
 import {
   Form,
@@ -22,21 +22,23 @@ import { cn } from "@/lib/utils";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
 
-interface ChapterDescriptionFormProps {
-  initialData: Chapter;
+interface LessonDescriptionFormProps {
+  initialData: Lesson;
   courseId: string;
   chapterId: string;
+  lessonId: string;
 }
 
 const formSchema = z.object({
   description: z.string().min(1),
 });
 
-export const ChapterDescriptionForm = ({
+export const LessonDescriptionForm = ({
   initialData,
   courseId,
   chapterId,
-}: ChapterDescriptionFormProps) => {
+  lessonId,
+}: LessonDescriptionFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
@@ -55,10 +57,10 @@ export const ChapterDescriptionForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(
-        `/api/courses/${courseId}/chapters/${chapterId}`,
+        `/api/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}`,
         values
       );
-      toast.success("Chapter updated");
+      toast.success("Lesson updated");
       toggleEdit();
       router.refresh();
     } catch {
@@ -69,7 +71,7 @@ export const ChapterDescriptionForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Chapter description
+        Lesson description
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>

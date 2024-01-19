@@ -1,21 +1,21 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, LayoutDashboard, Video } from "lucide-react";
+import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
 
 import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
-import { ChapterTitleForm } from "./_components/chapter-title-form";
-import { ChapterDescriptionForm } from "./_components/chapter-description-form";
-import { ChapterActions } from "./_components/chapter-actions";
-import { LessonsForm } from "./_components/lessons-form";
+import { LessonTitleForm } from "./_components/lesson-title-form";
+import { LessonDescriptionForm } from "./_components/lesson-description-form";
+import { LessonVideoForm } from "./_components/lesson-video-form";
+import { LessonActions } from "./_components/lesson-actions";
 
-const ChapterIdPage = async ({
+const LessonIdPage = async ({
   params,
 }: {
-  params: { courseId: string; chapterId: string };
+  params: { chapterId: string; lessonId: string; courseId: string };
 }) => {
   const { userId } = auth();
 
@@ -23,21 +23,21 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
-  const chapter = await db.chapter.findUnique({
+  const lesson = await db.lesson.findUnique({
     where: {
-      id: params.chapterId,
-      courseId: params.courseId,
+      id: params.lessonId,
+      chapterId: params.chapterId,
     },
     include: {
-      lessons: true,
+      muxData: true,
     },
   });
 
-  if (!chapter) {
+  if (!lesson) {
     return redirect("/");
   }
 
-  const requiredFields = [chapter.title, chapter.description, chapter.lessons];
+  const requiredFields = [lesson.title, lesson.description, lesson.videoUrl];
 
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
@@ -48,34 +48,35 @@ const ChapterIdPage = async ({
 
   return (
     <>
-      {!chapter.isPublished && (
+      {!lesson.isPublished && (
         <Banner
           variant="warning"
-          label="This chapter is unpublished. It will not be visible in the course"
+          label="This lesson is unpublished. It will not be visible in the course"
         />
       )}
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              href={`/teacher/courses/${params.courseId}`}
+              href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to course setup
+              Back to chapter setup
             </Link>
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col gap-y-2">
-                <h1 className="text-2xl font-medium">Chapter Creation</h1>
+                <h1 className="text-2xl font-medium">Lesson Creation</h1>
                 <span className="text-sm text-slate-700">
                   Complete all fields {completionText}
                 </span>
               </div>
-              <ChapterActions
+              <LessonActions
                 disabled={!isComplete}
                 courseId={params.courseId}
                 chapterId={params.chapterId}
-                isPublished={chapter.isPublished}
+                lessonId={params.lessonId}
+                isPublished={lesson.isPublished}
               />
             </div>
           </div>
@@ -85,17 +86,19 @@ const ChapterIdPage = async ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl">Customize your chapter</h2>
+                <h2 className="text-xl">Customize your lesson</h2>
               </div>
-              <ChapterTitleForm
-                initialData={chapter}
+              <LessonTitleForm
+                initialData={lesson}
                 courseId={params.courseId}
                 chapterId={params.chapterId}
+                lessonId={params.lessonId}
               />
-              <ChapterDescriptionForm
-                initialData={chapter}
+              <LessonDescriptionForm
+                initialData={lesson}
                 courseId={params.courseId}
                 chapterId={params.chapterId}
+                lessonId={params.lessonId}
               />
             </div>
           </div>
@@ -104,9 +107,10 @@ const ChapterIdPage = async ({
               <IconBadge icon={Video} />
               <h2 className="text-xl">Add a video</h2>
             </div>
-            <LessonsForm
-              initialData={chapter}
-              chapterId={chapter.id}
+            <LessonVideoForm
+              initialData={lesson}
+              chapterId={params.chapterId}
+              lessonId={params.lessonId}
               courseId={params.courseId}
             />
           </div>
@@ -116,4 +120,4 @@ const ChapterIdPage = async ({
   );
 };
 
-export default ChapterIdPage;
+export default LessonIdPage;

@@ -5,7 +5,9 @@ import { db } from "@/lib/db";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  {
+    params,
+  }: { params: { courseId: string; chapterId: string; lessonId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -25,36 +27,40 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.findUnique({
+    const lesson = await db.lesson.findUnique({
       where: {
-        id: params.chapterId,
-        courseId: params.courseId,
+        id: params.lessonId,
+        chapterId: params.chapterId,
       },
-      include: {
-        lessons: true,
+    });
+
+    const muxData = await db.muxData.findUnique({
+      where: {
+        lessonId: params.lessonId,
       },
     });
 
     if (
-      !chapter ||
-      !chapter.title ||
-      !chapter.description ||
-      !chapter.lessons
+      !lesson ||
+      !muxData ||
+      !lesson.title ||
+      !lesson.description ||
+      !lesson.videoUrl
     ) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
-    const publishedChapter = await db.chapter.update({
+    const publishedLesson = await db.lesson.update({
       where: {
-        id: params.chapterId,
-        courseId: params.courseId,
+        id: params.lessonId,
+        chapterId: params.chapterId,
       },
       data: {
         isPublished: true,
       },
     });
 
-    return NextResponse.json(publishedChapter);
+    return NextResponse.json(publishedLesson);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
