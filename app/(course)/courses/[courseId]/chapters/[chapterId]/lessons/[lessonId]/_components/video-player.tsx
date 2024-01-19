@@ -6,26 +6,29 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
+import ReactPlayer, { ReactPlayerProps } from "react-player";
 
 import { cn } from "@/lib/utils";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 
 interface VideoPlayerProps {
-  playbackId: string;
   courseId: string;
   chapterId: string;
+  lessonId: string;
   nextLessonId?: string;
   completeOnEnd: boolean;
   title: string;
+  url: string | null;
 }
 
 export const VideoPlayer = ({
-  playbackId,
   courseId,
   chapterId,
+  lessonId,
   nextLessonId,
   completeOnEnd,
   title,
+  url,
 }: VideoPlayerProps) => {
   const [isReady, setIsReady] = useState(false);
   const router = useRouter();
@@ -35,7 +38,7 @@ export const VideoPlayer = ({
     try {
       if (completeOnEnd) {
         await axios.put(
-          `/api/courses/${courseId}/chapters/${chapterId}/progress`,
+          `/api/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/progress`,
           {
             isCompleted: true,
           }
@@ -65,14 +68,31 @@ export const VideoPlayer = ({
         </div>
       )}
 
-      <MuxPlayer
+      {/* <MuxPlayer
         title={title}
         className={cn(!isReady && "hidden")}
         onCanPlay={() => setIsReady(true)}
         onEnded={onEnd}
         autoPlay
         playbackId={playbackId}
-      />
+      /> */}
+
+      <div className={cn(!isReady && "hidden")}>
+        <div className="bg-black px-10 py-2">
+          <p className="text-white/70 capti">{title}</p>
+        </div>
+        {url && (
+          <ReactPlayer
+            url={url}
+            playing={isReady} // Start paused initially
+            onReady={() => setIsReady(true)}
+            onEnded={onEnd}
+            width="640"
+            height="360"
+            controls={true} // Show player controls
+          />
+        )}
+      </div>
     </div>
   );
 };

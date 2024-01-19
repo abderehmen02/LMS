@@ -52,10 +52,11 @@ const LessonIdPage = async ({
           <VideoPlayer
             chapterId={params.chapterId}
             title={chapter.title}
+            lessonId={lesson.id}
             courseId={params.courseId}
             nextLessonId={nextLesson?.id}
-            playbackId={muxData?.playbackId!}
             completeOnEnd={completeOnEnd}
+            url={lesson.videoUrl}
           />
         </div>
         <div className="space-y-4">

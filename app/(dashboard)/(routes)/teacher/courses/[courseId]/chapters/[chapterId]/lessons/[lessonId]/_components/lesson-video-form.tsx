@@ -2,7 +2,6 @@
 
 import * as z from "zod";
 import axios from "axios";
-import MuxPlayer from "@mux/mux-player-react";
 import { Pencil, PlusCircle, Video } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -12,6 +11,7 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
+import ReactPlayer from "react-player";
 
 interface LessonVideoFormProps {
   initialData: Lesson & { muxData?: MuxData | null };
@@ -77,7 +77,14 @@ export const LessonVideoForm = ({
           </div>
         ) : (
           <div className="relative aspect-video mt-2">
-            <MuxPlayer playbackId={initialData?.muxData?.playbackId || ""} />
+            <ReactPlayer
+              height={"auto"}
+              width={"auto"}
+              className="h-full"
+              url={initialData.videoUrl}
+              playing={false}
+              controls={true}
+            />
           </div>
         ))}
       {isEditing && (
