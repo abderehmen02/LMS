@@ -24,6 +24,22 @@ export const getCourses = async ({
     const courses = await db.course.findMany({
       where: {
         isPublished: true,
+        AND: [
+          {
+            chapters: {
+              some: {
+                isPublished: true,
+                AND: {
+                  lessons: {
+                    every: {
+                      isPublished: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
         title: {
           contains: title,
         },
@@ -48,11 +64,23 @@ export const getCourses = async ({
     const coursesWithProgress: CourseWithProgressWithCategory[] =
       await Promise.all(
         courses.map(async (course) => {
-          const progressPercentage = await getProgress(userId, course.id);
+          const chapterProgress = await Promise.all(
+            course.chapters.map(async (chapter) => {
+              const chapterProgressPercentage = await getProgress(
+                userId,
+                course.id,
+                chapter.id
+              );
+              return chapterProgressPercentage;
+            })
+          );
+          const courseProgressPercentage =
+            chapterProgress.reduce((acc, progress) => acc + progress, 0) /
+            chapterProgress.length;
 
           return {
             ...course,
-            progress: progressPercentage,
+            progress: courseProgressPercentage,
           };
         })
       );

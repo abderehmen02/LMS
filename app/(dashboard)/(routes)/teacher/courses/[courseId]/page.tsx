@@ -1,6 +1,11 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { File, LayoutDashboard, ListChecks } from "lucide-react";
+import {
+  File,
+  LayoutDashboard,
+  ListChecks,
+  ShieldQuestion,
+} from "lucide-react";
 
 import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
@@ -13,6 +18,7 @@ import { CategoryForm } from "./_components/category-form";
 import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import { Actions } from "./_components/actions";
+import { ExamForm } from "./_components/exam-form";
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
@@ -27,6 +33,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       userId,
     },
     include: {
+      exams: true,
       chapters: {
         orderBy: {
           position: "asc",
@@ -109,6 +116,13 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 <h2 className="text-xl">Course chapters</h2>
               </div>
               <ChaptersForm initialData={course} courseId={course.id} />
+            </div>
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={ShieldQuestion} />
+                <h2 className="text-xl">Course Exam</h2>
+              </div>
+              <ExamForm initialData={course} courseId={course.id} />
             </div>
 
             <div>

@@ -4,14 +4,9 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 
-const { Video } = new Mux(
-  process.env.MUX_TOKEN_ID!,
-  process.env.MUX_TOKEN_SECRET!
-);
-
 export async function DELETE(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: { courseId: string; examId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -31,32 +26,32 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.findUnique({
+    const exam = await db.exam.findUnique({
       where: {
-        id: params.chapterId,
+        id: params.examId,
         courseId: params.courseId,
       },
     });
 
-    if (!chapter) {
+    if (!exam) {
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    const deletedChapter = await db.chapter.delete({
+    const deletedExam = await db.exam.delete({
       where: {
-        id: params.chapterId,
+        id: params.examId,
       },
     });
 
-    const publishedChaptersInCourse = await db.chapter.findMany({
+    const publishedExamInCourse = await db.exam.findMany({
       where: {
         courseId: params.courseId,
         isPublished: true,
       },
     });
 
-    if (!publishedChaptersInCourse.length) {
-      await db.course.update({
+    if (!publishedExamInCourse.length) {
+      await db.exam.update({
         where: {
           id: params.courseId,
         },
@@ -66,7 +61,7 @@ export async function DELETE(
       });
     }
 
-    return NextResponse.json(deletedChapter);
+    return NextResponse.json(deletedExam);
   } catch (error) {
     console.log("[CHAPTER_ID_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
@@ -75,7 +70,7 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: { courseId: string; examId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -98,7 +93,7 @@ export async function PATCH(
 
     const chapter = await db.chapter.update({
       where: {
-        id: params.chapterId,
+        id: params.examId,
         courseId: params.courseId,
       },
       data: {

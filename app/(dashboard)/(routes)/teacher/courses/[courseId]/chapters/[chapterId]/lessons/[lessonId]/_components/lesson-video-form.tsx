@@ -51,7 +51,7 @@ export const LessonVideoForm = ({
   };
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
+    <div className="mt-6 border bg-slate-100 max-h-full rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Lesson video
         <Button onClick={toggleEdit} variant="ghost">
@@ -78,8 +78,8 @@ export const LessonVideoForm = ({
         ) : (
           <div className="relative aspect-video mt-2">
             <ReactPlayer
-              height={"auto"}
-              width={"auto"}
+              height={"100%"}
+              width={"100%"}
               className="h-full"
               url={initialData.videoUrl}
               playing={false}

@@ -1,12 +1,21 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  Circle,
+  Plus,
+  PlusSquareIcon,
+} from "lucide-react";
+
+import { FaSpinner } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
+  CommandAddInput,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -17,6 +26,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface ComboboxProps {
   options: { label: string; value: string }[];
@@ -26,6 +38,24 @@ interface ComboboxProps {
 
 export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [category, setCategory] = React.useState("");
+
+  const router = useRouter();
+
+  const handleAddCategory = async () => {
+    setLoading(true);
+    try {
+      await axios.post(`/api/categories`, { name: category });
+      toast.success("Category added successfully");
+      router.refresh();
+      setCategory("");
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,6 +95,27 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
               </CommandItem>
             ))}
           </CommandGroup>
+          <div className="flex border-t items-center justify-around">
+            <input
+              type="text"
+              value={category}
+              onChange={(e) => {
+                setCategory(e.target.value);
+              }}
+              className="bg-white outline-none pl-3 placeholder:text-gray-600 text-sm placeholder:text-sm placeholder:font-thin"
+              placeholder="Add category"
+            />
+            <button
+              onClick={handleAddCategory}
+              className="hover:bg-slate-100 px-3 h-full py-2"
+            >
+              {!loading ? (
+                <Plus className="opacity-50" />
+              ) : (
+                <FaSpinner className="opacity-50 animate-spin p-2" />
+              )}
+            </button>
+          </div>
         </Command>
       </PopoverContent>
     </Popover>

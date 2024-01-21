@@ -61,7 +61,7 @@ export const VideoPlayer = ({
   };
 
   return (
-    <div className="relative aspect-video">
+    <div className="relative aspect-video h-fit w-full bg-red-600">
       {!isReady && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
           <Loader2 className="h-8 w-8 animate-spin text-secondary" />
@@ -77,9 +77,9 @@ export const VideoPlayer = ({
         playbackId={playbackId}
       /> */}
 
-      <div className={cn(!isReady && "hidden")}>
+      <div className={cn(!isReady && "hidden ")}>
         <div className="bg-black px-10 py-2">
-          <p className="text-white/70 capti">{title}</p>
+          <p className="text-white/70 capitalize">{title}</p>
         </div>
         {url && (
           <ReactPlayer
@@ -87,8 +87,8 @@ export const VideoPlayer = ({
             playing={isReady} // Start paused initially
             onReady={() => setIsReady(true)}
             onEnded={onEnd}
-            width="640"
-            height="360"
+            width={"100%"}
+            height={450}
             controls={true} // Show player controls
           />
         )}

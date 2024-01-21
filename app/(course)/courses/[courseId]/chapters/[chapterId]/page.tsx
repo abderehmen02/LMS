@@ -39,11 +39,18 @@ const ChapterIdPage = async ({
 
   return (
     <div className="flex flex-col max-w-4xl mx-10 mt-10 pb-20">
-      <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-2 items-end">
         <h1 className="text-2xl font-medium">{chapter.title}</h1>
         <span className="text-sm text-slate-700">Chapter details</span>
       </div>
       <div className="w-full grid lg:grid-cols-2 gap-8 mt-10">
+        <div className="col-span-1">
+          <div className="flex items-center gap-x-2 mb-4">
+            <IconBadge icon={Text} />
+            <h2 className="text-xl">Description</h2>
+          </div>
+          <Preview value={chapter.description!} />
+        </div>
         <div className="col-span-1">
           {chapter.lessons.map((lesson) => (
             <Link
@@ -64,13 +71,6 @@ const ChapterIdPage = async ({
               <div className="ml-auto pr-2 flex items-center gap-x-2"></div>
             </Link>
           ))}
-        </div>
-        <div className="col-span-1">
-          <div className="flex items-center gap-x-2 mb-4">
-            <IconBadge icon={Text} />
-            <h2 className="text-xl">Description</h2>
-          </div>
-          <Preview value={chapter.description!} />
         </div>
       </div>
     </div>

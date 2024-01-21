@@ -22,6 +22,7 @@ model Course {
 
   chapters    Chapter[]
   attachments Attachment[]
+  exams       Exam?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -61,6 +62,7 @@ model Chapter {
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   lessons Lesson[]
+  quiz    Quiz[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -93,6 +95,22 @@ model UserProgress {
   @@index([lessonId])
 }
 
+model UserQuizPoints {
+  id     String @id @default(uuid())
+  userId String
+
+  quizId String
+  quiz   Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  isCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, quizId])
+  @@index([quizId])
+}
+
 model Lesson {
   id          String  @id @default(uuid())
   title       String
@@ -112,4 +130,87 @@ model Lesson {
   updatedAt DateTime @updatedAt
 
   @@index([chapterId])
+}
+
+model Quiz {
+  id          String  @id @default(uuid())
+  title       String
+  description String? @db.Text
+  isPublished Boolean @default(false)
+
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  userQuizPoints UserQuizPoints[]
+  questions      QuizQuestion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([chapterId])
+}
+
+model Exam {
+  id           String         @id @default(uuid())
+  courseId     String         @unique
+  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  questions    ExamQuestion[]
+  passingScore Int?           @default(70) // Optional passing score
+  isPublished  Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([courseId])
+}
+
+model ExamQuestion {
+  id          String               @id @default(uuid())
+  examId      String
+  exam        Exam                 @relation(fields: [examId], references: [id], onDelete: Cascade)
+  prompt      String
+  options     ExamQuestionOption[]
+  answer      Int
+  explanation String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([examId])
+}
+
+model QuizQuestion {
+  id          String               @id @default(uuid())
+  quizId      String
+  quiz        Quiz                 @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  prompt      String
+  options     QuizQuestionOption[]
+  answer      Int
+  explanation String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([quizId])
+}
+
+model ExamQuestionOption {
+  id         String       @id @default(uuid())
+  question   ExamQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+  text       String
+  position   Int          @default(autoincrement())
+
+  @@index([questionId])
+  @@index([position])
+}
+
+model QuizQuestionOption {
+  id         String       @id @default(uuid())
+  question   QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+  text       String
+  position   Int          @default(autoincrement())
+
+  @@index([questionId])
+  @@index([position])
 }
