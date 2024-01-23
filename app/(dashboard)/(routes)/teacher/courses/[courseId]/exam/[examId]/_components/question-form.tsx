@@ -8,19 +8,14 @@ import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import {
-  Chapter,
-  Exam,
-  ExamQuestion,
-  ExamQuestionOption,
-  Lesson,
-} from "@prisma/client";
+import { Exam, ExamQuestion } from "@prisma/client";
 
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -28,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
 import { QuestionList } from "./question-list";
+import { Textarea } from "@/components/ui/textarea";
 
 interface QuestionFormProps {
   initialData: Exam & { questions: ExamQuestion[] };
@@ -81,7 +77,7 @@ export const QuestionForm = ({
       setIsUpdating(true);
 
       await axios.put(
-        `/api/courses/${courseId}/exam/${examId}/question/reorder`,
+        `/api/courses/${courseId}/exam/${examId}/questions/reorder`,
         {
           list: updateData,
         }
@@ -96,7 +92,7 @@ export const QuestionForm = ({
   };
 
   const onEdit = (id: string) => {
-    router.push(`/teacher/courses/${courseId}/exam/${examId}/question/${id}`);
+    router.push(`/teacher/courses/${courseId}/exam/${examId}/questions/${id}`);
   };
 
   return (
@@ -130,6 +126,7 @@ export const QuestionForm = ({
               name="prompt"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Question Title</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
@@ -141,6 +138,7 @@ export const QuestionForm = ({
                 </FormItem>
               )}
             />
+
             <Button disabled={!isValid || isSubmitting} type="submit">
               Create
             </Button>
@@ -164,7 +162,7 @@ export const QuestionForm = ({
       )}
       {!isCreating && (
         <p className="text-xs text-muted-foreground mt-4">
-          Drag and drop to reorder the lessons
+          Drag and drop to reorder the questions
         </p>
       )}
     </div>

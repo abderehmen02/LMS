@@ -1,22 +1,22 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, LayoutDashboard, Video } from "lucide-react";
+import { ArrowLeft, Eye, LayoutDashboard, Pointer, Video } from "lucide-react";
 
 import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
-import { ExamTitleForm } from "./_components/exam-title-form";
-import { ExamDescriptionForm } from "./_components/exam-description-form";
-import { ExamActions } from "./_components/exam-actions";
-import { QuestionForm } from "./_components/question-form";
-import { FaQuestion } from "react-icons/fa";
+import { QuestionPromptForm } from "./_components/question-prompt-form";
+import { QuestionExplanationForm } from "./_components/question-explanation-form";
+import { QuestionActions } from "./_components/question-actions";
+import { QuestionAnswerForm } from "./_components/question-answer-form";
+import { OptionForm } from "./_components/option-form";
 
-const ChapterIdPage = async ({
+const QuestinoIdPage = async ({
   params,
 }: {
-  params: { courseId: string; examId: string };
+  params: { examId: string; questionId: string; courseId: string };
 }) => {
   const { userId } = auth();
 
@@ -24,21 +24,29 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
-  const exam = await db.exam.findUnique({
+  const question = await db.examQuestion.findUnique({
     where: {
-      id: params.examId,
-      courseId: params.courseId,
+      id: params.questionId,
+      examId: params.examId,
     },
     include: {
-      questions: true,
+      options: {
+        orderBy: {
+          position: "asc",
+        },
+      },
     },
   });
 
-  if (!exam) {
+  if (!question) {
     return redirect("/");
   }
 
-  const requiredFields = [exam.title, exam.description, exam.questions];
+  const requiredFields = [
+    question.prompt,
+    question.explanation,
+    question.options.length === 4,
+  ];
 
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
@@ -49,34 +57,35 @@ const ChapterIdPage = async ({
 
   return (
     <>
-      {!exam.isPublished && (
+      {!question.isPublished && (
         <Banner
           variant="warning"
-          label="This exam is unpublished. It will not be visible in the course"
+          label="This question is unpublished. It will not be visible in the course"
         />
       )}
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              href={`/teacher/courses/${params.courseId}`}
+              href={`/teacher/courses/${params.courseId}/exam/${params.examId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to course setup
+              Back to exam setup
             </Link>
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col gap-y-2">
-                <h1 className="text-2xl font-medium">Exam Creation</h1>
+                <h1 className="text-2xl font-medium">Question Creation</h1>
                 <span className="text-sm text-slate-700">
                   Complete all fields {completionText}
                 </span>
               </div>
-              <ExamActions
+              <QuestionActions
                 disabled={!isComplete}
                 courseId={params.courseId}
                 examId={params.examId}
-                isPublished={exam.isPublished}
+                questionId={params.questionId}
+                isPublished={question.isPublished}
               />
             </div>
           </div>
@@ -86,29 +95,38 @@ const ChapterIdPage = async ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl">Customize your chapter</h2>
+                <h2 className="text-xl">Customize the Question</h2>
               </div>
-              <ExamTitleForm
-                initialData={exam}
+              <QuestionPromptForm
+                initialData={question}
                 courseId={params.courseId}
                 examId={params.examId}
+                questionId={params.questionId}
               />
-              <ExamDescriptionForm
-                initialData={exam}
+              <QuestionAnswerForm
+                initialData={question}
                 courseId={params.courseId}
                 examId={params.examId}
+                questionId={params.questionId}
+              />
+              <QuestionExplanationForm
+                initialData={question}
+                courseId={params.courseId}
+                examId={params.examId}
+                questionId={params.questionId}
               />
             </div>
           </div>
           <div>
             <div className="flex items-center gap-x-2">
-              <IconBadge icon={FaQuestion} />
-              <h2 className="text-xl">Add Questions</h2>
+              <IconBadge icon={Pointer} />
+              <h2 className="text-xl">Add a Options</h2>
             </div>
-            <QuestionForm
-              initialData={exam}
-              examId={exam.id}
+            <OptionForm
+              initialData={question}
               courseId={params.courseId}
+              examId={params.examId}
+              questionId={params.questionId}
             />
           </div>
         </div>
@@ -117,4 +135,4 @@ const ChapterIdPage = async ({
   );
 };
 
-export default ChapterIdPage;
+export default QuestinoIdPage;

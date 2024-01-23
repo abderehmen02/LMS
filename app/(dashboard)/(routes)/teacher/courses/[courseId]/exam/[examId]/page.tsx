@@ -7,15 +7,16 @@ import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
-import { ChapterTitleForm } from "./_components/chapter-title-form";
-import { ChapterDescriptionForm } from "./_components/chapter-description-form";
-import { ChapterActions } from "./_components/chapter-actions";
-import { LessonsForm } from "./_components/lessons-form";
+import { ExamTitleForm } from "./_components/exam-title-form";
+import { ExamDescriptionForm } from "./_components/exam-description-form";
+import { ExamActions } from "./_components/exam-actions";
+import { QuestionForm } from "./_components/question-form";
+import { FaQuestion } from "react-icons/fa";
 
 const ChapterIdPage = async ({
   params,
 }: {
-  params: { courseId: string; chapterId: string };
+  params: { courseId: string; examId: string };
 }) => {
   const { userId } = auth();
 
@@ -23,25 +24,24 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
-  const chapter = await db.chapter.findUnique({
+  const exam = await db.exam.findUnique({
     where: {
-      id: params.chapterId,
+      id: params.examId,
       courseId: params.courseId,
     },
     include: {
-      lessons: true,
+      questions: true,
     },
   });
 
-  if (!chapter) {
+  if (!exam) {
     return redirect("/");
   }
 
   const requiredFields = [
-    chapter.title,
-    chapter.description,
-    chapter.lessons,
-    chapter.lessons.some((lesson) => lesson.isPublished),
+    exam.title,
+    exam.description,
+    exam.questions.some((question) => question.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -53,10 +53,10 @@ const ChapterIdPage = async ({
 
   return (
     <>
-      {!chapter.isPublished && (
+      {!exam.isPublished && (
         <Banner
           variant="warning"
-          label="This chapter is unpublished. It will not be visible in the course"
+          label="This exam is unpublished. It will not be visible in the course"
         />
       )}
       <div className="p-6">
@@ -71,16 +71,16 @@ const ChapterIdPage = async ({
             </Link>
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col gap-y-2">
-                <h1 className="text-2xl font-medium">Chapter Creation</h1>
+                <h1 className="text-2xl font-medium">Exam Creation</h1>
                 <span className="text-sm text-slate-700">
                   Complete all fields {completionText}
                 </span>
               </div>
-              <ChapterActions
+              <ExamActions
                 disabled={!isComplete}
                 courseId={params.courseId}
-                chapterId={params.chapterId}
-                isPublished={chapter.isPublished}
+                examId={params.examId}
+                isPublished={exam.isPublished}
               />
             </div>
           </div>
@@ -92,26 +92,26 @@ const ChapterIdPage = async ({
                 <IconBadge icon={LayoutDashboard} />
                 <h2 className="text-xl">Customize your chapter</h2>
               </div>
-              <ChapterTitleForm
-                initialData={chapter}
+              <ExamTitleForm
+                initialData={exam}
                 courseId={params.courseId}
-                chapterId={params.chapterId}
+                examId={params.examId}
               />
-              <ChapterDescriptionForm
-                initialData={chapter}
+              <ExamDescriptionForm
+                initialData={exam}
                 courseId={params.courseId}
-                chapterId={params.chapterId}
+                examId={params.examId}
               />
             </div>
           </div>
           <div>
             <div className="flex items-center gap-x-2">
-              <IconBadge icon={Video} />
-              <h2 className="text-xl">Add a video</h2>
+              <IconBadge icon={FaQuestion} />
+              <h2 className="text-xl">Add Questions</h2>
             </div>
-            <LessonsForm
-              initialData={chapter}
-              chapterId={chapter.id}
+            <QuestionForm
+              initialData={exam}
+              examId={exam.id}
               courseId={params.courseId}
             />
           </div>

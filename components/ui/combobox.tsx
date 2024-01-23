@@ -44,6 +44,7 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
   const router = useRouter();
 
   const handleAddCategory = async () => {
+    if (category.trim() === "") return;
     setLoading(true);
     try {
       await axios.post(`/api/categories`, { name: category });
@@ -112,7 +113,7 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
               {!loading ? (
                 <Plus className="opacity-50" />
               ) : (
-                <FaSpinner className="opacity-50 animate-spin p-2" />
+                <FaSpinner className="opacity-50 animate-spin m-2 text-slate-700" />
               )}
             </button>
           </div>

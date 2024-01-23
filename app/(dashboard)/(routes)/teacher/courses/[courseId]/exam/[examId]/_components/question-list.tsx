@@ -11,6 +11,7 @@ import {
 import { Grip, Pencil } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface QuestionListProps {
   items: ExamQuestion[];
@@ -74,7 +75,9 @@ export const QuestionList = ({
                 {(provided) => (
                   <div
                     className={cn(
-                      "flex items-center bg-sky-100 border-sky-200 text-sky-700 gap-x-2 border rounded-md mb-4 text-sm"
+                      "flex items-center bg-sky-100 border-sky-200 text-sky-700 gap-x-2 border rounded-md mb-4 text-sm",
+                      question.isPublished &&
+                        "bg-green-100 border-green-200 text-green-700"
                     )}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
@@ -89,6 +92,14 @@ export const QuestionList = ({
                     </div>
                     {question.prompt}
                     <div className="ml-auto pr-2 flex items-center gap-x-2">
+                      <Badge
+                        className={cn(
+                          "bg-slate-500",
+                          question.isPublished && "bg-sky-700"
+                        )}
+                      >
+                        {question.isPublished ? "Published" : "Draft"}
+                      </Badge>
                       <Pencil
                         onClick={() => onEdit(question.id)}
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
