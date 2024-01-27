@@ -4,10 +4,52 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 
-const { Video } = new Mux(
-  process.env.MUX_TOKEN_ID!,
-  process.env.MUX_TOKEN_SECRET!
-);
+export async function GET(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const { userId } = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const course = await db.course.findUnique({
+      where: {
+        id: params.courseId,
+        userId: userId,
+      },
+      include: {
+        chapters: true,
+        exams: {
+          where: {
+            isPublished: true,
+          },
+          include: {
+            questions: {
+              where: {
+                isPublished: true,
+              },
+              include: {
+                options: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    return NextResponse.json(course);
+  } catch (error) {
+    console.log("[COURSE_ID_DELETE]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
 
 export async function DELETE(
   req: Request,

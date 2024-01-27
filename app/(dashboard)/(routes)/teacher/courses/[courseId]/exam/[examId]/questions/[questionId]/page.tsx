@@ -60,7 +60,7 @@ const QuestinoIdPage = async ({
       {!question.isPublished && (
         <Banner
           variant="warning"
-          label="This question is unpublished. It will not be visible in the course"
+          label="This question is unpublished. It will not be visible in the exam"
         />
       )}
       <div className="p-6">

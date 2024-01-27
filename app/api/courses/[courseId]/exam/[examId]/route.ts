@@ -74,7 +74,7 @@ export async function PATCH(
 ) {
   try {
     const { userId } = auth();
-    const { isPublished, ...values } = await req.json();
+    const { ...values } = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -91,7 +91,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.update({
+    const exam = await db.exam.update({
       where: {
         id: params.examId,
         courseId: params.courseId,
@@ -101,9 +101,9 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(chapter);
+    return NextResponse.json(exam);
   } catch (error) {
-    console.log("[COURSES_CHAPTER_ID]", error);
+    console.log("[EXAM_ID]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

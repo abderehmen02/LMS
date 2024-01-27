@@ -2,8 +2,7 @@ import { db } from "@/lib/db";
 
 export const getProgress = async (
   userId: string,
-  courseId: string,
-  chapterId: string
+  courseId: string
 ): Promise<number> => {
   try {
     const publishedChapters = await db.chapter.findMany({
@@ -15,7 +14,6 @@ export const getProgress = async (
         id: true,
         lessons: {
           where: {
-            chapterId: chapterId,
             isPublished: true,
           },
           select: {

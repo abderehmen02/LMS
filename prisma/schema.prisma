@@ -137,6 +137,7 @@ model Quiz {
   title       String
   description String? @db.Text
   isPublished Boolean @default(false)
+  userId      String? @default("nil")
 
   chapterId String
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
@@ -156,8 +157,11 @@ model Exam {
   course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title        String
   description  String?
+  userId       String?        @default("nil")
   questions    ExamQuestion[]
-  passingScore Int?           @default(70) // Optional passing score
+  passingScore Int?           @default(70)
+  beforeScore  Float?         @default(0)
+  afterScore   Float?         @default(0)
   isPublished  Boolean        @default(false)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

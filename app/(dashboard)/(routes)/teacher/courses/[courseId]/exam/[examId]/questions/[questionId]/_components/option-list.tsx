@@ -94,7 +94,7 @@ export const OptionList = ({
         `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/options/${currentOption?.id}`,
         values
       );
-      toast.success("Question option created");
+      toast.success("Question option updated");
       router.refresh();
     } catch (error: any) {
       console.log("====================================");
@@ -169,14 +169,6 @@ export const OptionList = ({
                     {option.text}
                     {!isDeleting && (
                       <div className="ml-auto pr-2 flex items-center gap-x-2">
-                        <Badge
-                          className={cn(
-                            "bg-slate-500",
-                            option.isPublished && "bg-sky-700"
-                          )}
-                        >
-                          {option.isPublished ? "Published" : "Draft"}
-                        </Badge>
                         <Delete
                           onClick={() => {
                             setCurrentOption((prev) => option);

@@ -21,20 +21,13 @@ const LessonIdPage = async ({
     return redirect("/");
   }
 
-  const {
-    lesson,
-    chapter,
-    course,
-    muxData,
-    attachments,
-    nextLesson,
-    userProgress,
-  } = await getChapter({
-    userId,
-    chapterId: params.chapterId,
-    courseId: params.courseId,
-    lessonId: params.lessonId,
-  });
+  const { lesson, chapter, course, attachments, nextLesson, userProgress } =
+    await getChapter({
+      userId,
+      chapterId: params.chapterId,
+      courseId: params.courseId,
+      lessonId: params.lessonId,
+    });
 
   if (!chapter || !course || !lesson) {
     return redirect("/");
