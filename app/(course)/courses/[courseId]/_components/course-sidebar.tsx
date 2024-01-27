@@ -91,8 +91,10 @@ export const CourseSidebar = async ({
             </p>
           ) : progressCount === 100 ? (
             <p className="px-4 pb-4 text-xs italic">
-              You have finished the course, please take the exam. You will get a
-              certificate!
+              You have finished the course{" "}
+              <span className={cn(!exam?.id && "hidden")}>
+                please take the exam. You will get a certificate!
+              </span>
             </p>
           ) : (
             <p className="px-4 pb-4 text-xs italic">
@@ -100,24 +102,26 @@ export const CourseSidebar = async ({
               you have to the course to take it. Keep climbing!
             </p>
           )}
-          <Link
-            href={`/courses/${course.id}/exam/${exam?.id}}`}
-            prefetch={false}
-            className={cn(
-              "flex items-center text-right gap-x-2 px-4 bg-slate-500/20 text-slate-500 text-sm font-[500] py-4 transition-all hover:text-slate-600 hover:bg-slate-500/20",
-              progressCount > 0 && progressCount < 100
-                ? "cursor-not-allowed"
-                : "animate-pulse text-emerald-500 bg-emerald-500/20 hover:text-emerald-600 hover:bg-emerald-600/20"
-            )}
-          >
-            Take exam the course?{" "}
-            <ArrowRight
+          {exam?.id && (
+            <Link
+              href={`/courses/${course.id}/exam/${exam.id}}`}
+              prefetch={false}
               className={cn(
-                "ml-4 text-slate-500",
-                progressCount === 100 && "text-emerald-500"
+                "flex items-center text-right gap-x-2 px-4 bg-slate-500/20 text-slate-500 text-sm font-[500] py-4 transition-all hover:text-slate-600 hover:bg-slate-500/20",
+                progressCount > 0 && progressCount < 100
+                  ? "cursor-not-allowed"
+                  : "animate-pulse text-emerald-500 bg-emerald-500/20 hover:text-emerald-600 hover:bg-emerald-600/20"
               )}
-            />
-          </Link>
+            >
+              Take exam the course?{" "}
+              <ArrowRight
+                className={cn(
+                  "ml-4 text-slate-500",
+                  progressCount === 100 && "text-emerald-500"
+                )}
+              />
+            </Link>
+          )}
         </div>
       )}
     </div>
