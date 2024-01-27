@@ -15,6 +15,8 @@ interface CourseProgressButtonProps {
   lessonId: string;
   isCompleted?: boolean;
   nextLessonId?: string;
+  nextChapterId?: string;
+  nextChapterFirstLessonId?: string;
 }
 
 export const CourseProgressButton = ({
@@ -23,6 +25,8 @@ export const CourseProgressButton = ({
   lessonId,
   isCompleted,
   nextLessonId,
+  nextChapterId,
+  nextChapterFirstLessonId,
 }: CourseProgressButtonProps) => {
   const router = useRouter();
   const confetti = useConfettiStore();
@@ -39,12 +43,20 @@ export const CourseProgressButton = ({
         }
       );
 
-      if (!isCompleted && !nextLessonId) {
+      if (!isCompleted && !nextLessonId && !nextChapterId) {
         confetti.onOpen();
       }
 
       if (!isCompleted && nextLessonId) {
-        router.push(`/courses/${courseId}/chapters/${nextLessonId}`);
+        router.push(
+          `/courses/${courseId}/chapters/${chapterId}/lessons/${nextLessonId}`
+        );
+      }
+
+      if (!isCompleted && !nextLessonId && nextChapterId) {
+        router.push(
+          `/courses/${courseId}/chapters/${nextChapterId}/lessons/${nextChapterFirstLessonId}`
+        );
       }
 
       toast.success("Progress updated");

@@ -21,13 +21,20 @@ const LessonIdPage = async ({
     return redirect("/");
   }
 
-  const { lesson, chapter, course, attachments, nextLesson, userProgress } =
-    await getChapter({
-      userId,
-      chapterId: params.chapterId,
-      courseId: params.courseId,
-      lessonId: params.lessonId,
-    });
+  const {
+    lesson,
+    chapter,
+    course,
+    attachments,
+    nextLesson,
+    nextChapter,
+    userProgress,
+  } = await getChapter({
+    userId,
+    chapterId: params.chapterId,
+    courseId: params.courseId,
+    lessonId: params.lessonId,
+  });
 
   if (!chapter || !course || !lesson) {
     return redirect("/");
@@ -48,6 +55,8 @@ const LessonIdPage = async ({
             lessonId={lesson.id}
             courseId={params.courseId}
             nextLessonId={nextLesson?.id}
+            nextChapterId={nextChapter?.id}
+            nextChapterFirstLessonId={nextChapter?.lessons[0].id}
             completeOnEnd={completeOnEnd}
             url={lesson.videoUrl}
           />
@@ -63,6 +72,8 @@ const LessonIdPage = async ({
               chapterId={params.chapterId}
               courseId={params.courseId}
               nextLessonId={nextLesson?.id}
+              nextChapterId={nextChapter?.id}
+              nextChapterFirstLessonId={nextChapter?.lessons[0].id}
               isCompleted={!!userProgress?.isCompleted}
             />
           </div>

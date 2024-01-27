@@ -16,6 +16,8 @@ interface VideoPlayerProps {
   chapterId: string;
   lessonId: string;
   nextLessonId?: string;
+  nextChapterId?: string;
+  nextChapterFirstLessonId?: string;
   completeOnEnd: boolean;
   title: string;
   url: string | null;
@@ -26,6 +28,8 @@ export const VideoPlayer = ({
   chapterId,
   lessonId,
   nextLessonId,
+  nextChapterId,
+  nextChapterFirstLessonId,
   completeOnEnd,
   title,
   url,
@@ -44,15 +48,24 @@ export const VideoPlayer = ({
           }
         );
 
-        if (!nextLessonId) {
+        if (!nextLessonId && !nextChapterId) {
           confetti.onOpen();
+          toast.success("You have finished the course, take the exams");
         }
 
         toast.success("Progress updated");
         router.refresh();
 
         if (nextLessonId) {
-          router.push(`/courses/${courseId}/chapters/${nextLessonId}`);
+          router.push(
+            `/courses/${courseId}/chapters/${chapterId}/lessons/${nextLessonId}`
+          );
+        }
+
+        if (!nextLessonId && nextChapterId) {
+          router.push(
+            `/courses/${courseId}/chapters/${nextChapterId}/lessons/${nextChapterFirstLessonId}`
+          );
         }
       }
     } catch {

@@ -55,6 +55,10 @@ export const CourseSidebar = async ({
     },
   });
 
+  if (progressCount === 100 && exam) {
+    redirect(`/courses/${course.id}/exam/${exam.id}`);
+  }
+
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
       <div className="p-8 flex flex-col border-b">
@@ -85,10 +89,15 @@ export const CourseSidebar = async ({
               percent progress will be awarded to you if you answer over 50% of
               the question correctly
             </p>
+          ) : progressCount === 100 ? (
+            <p className="px-4 pb-4 text-xs italic">
+              You have finished the course, please take the exam. You will get a
+              certificate!
+            </p>
           ) : (
             <p className="px-4 pb-4 text-xs italic">
-              There another exam at the end of the course offers certification,
-              but you have to the course to take it. Keep climbing!
+              There an exam at the end of the course offers certification, but
+              you have to the course to take it. Keep climbing!
             </p>
           )}
           <Link
@@ -96,10 +105,18 @@ export const CourseSidebar = async ({
             prefetch={false}
             className={cn(
               "flex items-center text-right gap-x-2 px-4 bg-slate-500/20 text-slate-500 text-sm font-[500] py-4 transition-all hover:text-slate-600 hover:bg-slate-500/20",
-              progressCount > 0 && progressCount < 100 && "cursor-not-allowed"
+              progressCount > 0 && progressCount < 100
+                ? "cursor-not-allowed"
+                : "animate-pulse text-emerald-500 bg-emerald-500/20 hover:text-emerald-600 hover:bg-emerald-600/20"
             )}
           >
-            Take exam the course? <ArrowRight className="ml-4 text-slate-500" />
+            Take exam the course?{" "}
+            <ArrowRight
+              className={cn(
+                "ml-4 text-slate-500",
+                progressCount === 100 && "text-emerald-500"
+              )}
+            />
           </Link>
         </div>
       )}
