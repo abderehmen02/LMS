@@ -55,11 +55,29 @@ export const ExamForm = ({ initialData, courseId }: ExamFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/courses/${courseId}/exam`, values);
+      const response = await axios.post(
+        `/api/courses/${courseId}/exam`,
+        values
+      );
       toast.success("Exam created");
+
+      const certificateResponse = await axios.post(
+        `/api/courses/${courseId}/exam/${response.data.id}/certificate`
+      );
+
+      if (certificateResponse.status === 200) {
+        toast.success("A certificate was also created for this course!");
+      } else {
+        //TODO: handle certificate creation error
+      }
+
       toggleCreating();
+
       router.refresh();
     } catch (error) {
+      console.log("====================================");
+      console.log(error);
+      console.log("====================================");
       toast.error("Something went wrong");
     }
   };

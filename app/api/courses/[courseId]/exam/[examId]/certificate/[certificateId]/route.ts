@@ -4,9 +4,40 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 
+export async function GET(
+  req: Request,
+  { params }: { params: { certificateId: string } }
+) {
+  try {
+    const { userId } = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const certificate = await db.certificate.findUnique({
+      where: {
+        id: params.certificateId,
+        userId: userId,
+      },
+    });
+
+    if (!certificate) {
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    return NextResponse.json(certificate);
+  } catch (error) {
+    console.log("[CERTIFICATE_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
 export async function DELETE(
   req: Request,
-  { params }: { params: { courseId: string; examId: string } }
+  {
+    params,
+  }: { params: { courseId: string; examId: string; certificateId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -37,40 +68,24 @@ export async function DELETE(
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    const deletedExam = await db.exam.delete({
+    const deletedCertificate = await db.certificate.delete({
       where: {
-        id: params.examId,
+        id: params.certificateId,
       },
     });
 
-    const publishedExamInCourse = await db.exam.findMany({
-      where: {
-        courseId: params.courseId,
-        isPublished: true,
-      },
-    });
-
-    if (!publishedExamInCourse.length) {
-      await db.course.update({
-        where: {
-          id: params.courseId,
-        },
-        data: {
-          isPublished: false,
-        },
-      });
-    }
-
-    return NextResponse.json(deletedExam);
+    return NextResponse.json(deletedCertificate);
   } catch (error) {
-    console.log("[EXAM_ID_DELETE]", error);
+    console.log("[CERTIFICATE_ID_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string; examId: string } }
+  {
+    params,
+  }: { params: { courseId: string; examId: string; certificateId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -80,30 +95,19 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
+    const certificate = await db.certificate.update({
       where: {
-        id: params.courseId,
-        userId,
-      },
-    });
-
-    if (!ownCourse) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const exam = await db.exam.update({
-      where: {
-        id: params.examId,
-        courseId: params.courseId,
+        id: params.certificateId,
+        examId: params.examId,
       },
       data: {
         ...values,
       },
     });
 
-    return NextResponse.json(exam);
+    return NextResponse.json(certificate);
   } catch (error) {
-    console.log("[EXAM_ID]", error);
+    console.log("[CERTIFICATE_ID]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

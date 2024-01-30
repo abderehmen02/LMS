@@ -34,19 +34,7 @@ export async function PATCH(
       },
     });
 
-    const muxData = await db.muxData.findUnique({
-      where: {
-        lessonId: params.lessonId,
-      },
-    });
-
-    if (
-      !lesson ||
-      !muxData ||
-      !lesson.title ||
-      !lesson.description ||
-      !lesson.videoUrl
-    ) {
+    if (!lesson || !lesson.title || !lesson.description || !lesson.videoUrl) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -62,7 +50,7 @@ export async function PATCH(
 
     return NextResponse.json(publishedLesson);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[LESSON_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

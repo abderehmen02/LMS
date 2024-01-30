@@ -44,23 +44,6 @@ export async function DELETE(
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    if (lesson.videoUrl) {
-      const existingMuxData = await db.muxData.findFirst({
-        where: {
-          lessonId: params.lessonId,
-        },
-      });
-
-      if (existingMuxData) {
-        await Video.Assets.del(existingMuxData.assetId);
-        await db.muxData.delete({
-          where: {
-            id: existingMuxData.id,
-          },
-        });
-      }
-    }
-
     const deletedLesson = await db.lesson.delete({
       where: {
         id: params.lessonId,
@@ -126,37 +109,6 @@ export async function PATCH(
         ...values,
       },
     });
-
-    if (values.videoUrl) {
-      const existingMuxData = await db.muxData.findFirst({
-        where: {
-          lessonId: params.lessonId,
-        },
-      });
-
-      if (existingMuxData) {
-        await Video.Assets.del(existingMuxData.assetId);
-        await db.muxData.delete({
-          where: {
-            id: existingMuxData.id,
-          },
-        });
-      }
-
-      const asset = await Video.Assets.create({
-        input: values.videoUrl,
-        playback_policy: "public",
-        test: false,
-      });
-
-      await db.muxData.create({
-        data: {
-          lessonId: params.lessonId,
-          assetId: asset.id,
-          playbackId: asset.playback_ids?.[0]?.id,
-        },
-      });
-    }
 
     return NextResponse.json(lesson);
   } catch (error) {

@@ -70,15 +70,6 @@ model Chapter {
   @@index([courseId])
 }
 
-model MuxData {
-  id         String  @id @default(uuid())
-  assetId    String
-  playbackId String?
-
-  lessonId String @unique
-  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-}
-
 model UserProgress {
   id     String @id @default(uuid())
   userId String
@@ -119,8 +110,6 @@ model Lesson {
   position    Int
   isPublished Boolean @default(false)
 
-  muxData MuxData?
-
   chapterId String
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
@@ -159,6 +148,7 @@ model Exam {
   description  String?
   userId       String?        @default("nil")
   questions    ExamQuestion[]
+  certificate  Certificate[]
   passingScore Int?           @default(70)
   beforeScore  Float?         @default(0)
   afterScore   Float?         @default(0)
@@ -221,4 +211,16 @@ model QuizQuestionOption {
 
   @@index([questionId])
   @@index([position])
+}
+
+model Certificate {
+  id             String   @id @default(uuid())
+  exam           Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId         String
+  nameOfStudent  String?
+  userId         String
+  courseTitle    String
+  dateOfIssuance DateTime @default(now())
+
+  @@index([examId])
 }

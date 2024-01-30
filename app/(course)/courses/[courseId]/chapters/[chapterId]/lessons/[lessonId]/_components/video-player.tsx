@@ -80,16 +80,6 @@ export const VideoPlayer = ({
           <Loader2 className="h-8 w-8 animate-spin text-secondary" />
         </div>
       )}
-
-      {/* <MuxPlayer
-        title={title}
-        className={cn(!isReady && "hidden")}
-        onCanPlay={() => setIsReady(true)}
-        onEnded={onEnd}
-        autoPlay
-        playbackId={playbackId}
-      /> */}
-
       <div className={cn(!isReady && "hidden ")}>
         <div className="bg-black px-10 py-2">
           <p className="text-white/70 capitalize">{title}</p>

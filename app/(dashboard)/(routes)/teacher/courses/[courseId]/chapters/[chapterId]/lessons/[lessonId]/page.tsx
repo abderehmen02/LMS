@@ -28,9 +28,6 @@ const LessonIdPage = async ({
       id: params.lessonId,
       chapterId: params.chapterId,
     },
-    include: {
-      muxData: true,
-    },
   });
 
   if (!lesson) {

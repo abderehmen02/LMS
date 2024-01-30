@@ -27,6 +27,7 @@ export async function GET(
             isPublished: true,
           },
           include: {
+            certificate: true,
             questions: {
               where: {
                 isPublished: true,

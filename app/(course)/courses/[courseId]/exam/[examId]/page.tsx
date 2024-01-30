@@ -2,23 +2,22 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { File, PlayCircle, Text } from "lucide-react";
 
-import { Separator } from "@/components/ui/separator";
 import { Preview } from "@/components/preview";
-import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
-import { Prisma } from "@prisma/client";
+import { Prisma, Certificate } from "@prisma/client";
 import axios from "axios";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 import { getProgress } from "@/actions/get-progress";
 import { Banner } from "@/components/banner";
+import { PrepareCertificateModal } from "@/components/modals/exam-certificate-modal";
+import { Button } from "@/components/ui/button";
 
 type ExamWithQuestionsAndOptions = Prisma.ExamGetPayload<{
   include: {
+    certificate: true;
     questions: {
       where: {
         isPublished: true;
@@ -40,6 +39,8 @@ const ExamIdPage = ({
   const confetti = useConfettiStore();
 
   const [exam, setExam] = useState<ExamWithQuestionsAndOptions | null>();
+
+  const [certificateId, setCertificateId] = useState("");
 
   const [progressCount, setProgressCount] = useState<number>();
 
@@ -88,20 +89,7 @@ const ExamIdPage = ({
 
       sethasSubmitted(true);
 
-      toast.success(
-        "Exam Submitted Successfully. " +
-          "You scored Score Percentage: " +
-          scorePercentage.toFixed(2) +
-          "%" +
-          `${
-            isBeforeCourseExam
-              ? "Your score will be added and aggregated with the score you get when you take the exam after learning the course"
-              : hasTakenTheExamBefore
-              ? "This score will be compared to your previous score and your progress calculated"
-              : "Congratulations!"
-          }`,
-        { duration: 4000 }
-      );
+      toast.success("Exam Submitted Successfully.", { duration: 4000 });
 
       confetti.onOpen();
 
@@ -124,7 +112,7 @@ const ExamIdPage = ({
       (hasTakenTheExamBefore && exam.afterScore && exam.afterScore > 0) ||
       (hasSubmitted && isBeforeCourseExam)
     ) {
-      redirect(`/courses/${params.courseId}`);
+      sethasSubmitted(true);
     }
   }, [
     exam?.afterScore,
@@ -135,6 +123,7 @@ const ExamIdPage = ({
   ]);
 
   useEffect(() => {
+    if (hasSubmitted) return;
     const totalQuestions = exam?.questions.length;
 
     if (!totalQuestions) return;
@@ -155,12 +144,8 @@ const ExamIdPage = ({
       }
     });
 
-    console.log("====================================");
-    console.log("hi");
-    console.log("====================================");
-
     setScorePercentage((correctAnswers / totalQuestions) * 100);
-  }, [exam?.questions, userSelections]);
+  }, [exam?.questions, userSelections, hasSubmitted]);
 
   useEffect(() => {
     if (answeredQuestions === exam?.questions.length)
@@ -173,6 +158,16 @@ const ExamIdPage = ({
         const response = await axios.get(`/api/courses/${params.courseId}`);
 
         setExam(response.data.exams);
+
+        console.log("====================================");
+        console.log(response.data);
+        console.log("====================================");
+
+        setCertificateId(
+          response.data.exams?.certificate.find(
+            (certificate: Certificate) => certificate.userId === userId
+          )?.id
+        );
 
         console.log("====================================");
         console.log(response.data);
@@ -197,13 +192,6 @@ const ExamIdPage = ({
     return redirect("/");
   }
 
-  // if (!course) {
-  //   console.log("====================================");
-  //   console.log(course, "error");
-  //   console.log("====================================");
-  //   return redirect("/");
-  // }
-
   return (
     <>
       {exam ? (
@@ -211,8 +199,7 @@ const ExamIdPage = ({
           {hasSubmitted ? (
             <Banner
               variant={wrongAnswers > correctAnswers ? "warning" : "success"}
-              label={`Answered Questions: ${answeredQuestions}    |    Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers}
-`}
+              label={`Answered Questions: ${answeredQuestions}    |    Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
             />
           ) : (
             <div className="w-full flex justify-end items-center h-12 bg-sky-400/50">
@@ -222,7 +209,14 @@ const ExamIdPage = ({
                   Total questions {exam?.questions.length}
                 </p>
               </div>
-              <button className="bg-teal-500 text-white h-full font-bold text-sm px-4">
+              <button
+                onClick={handleSubmit}
+                className={cn(
+                  "bg-teal-500 w-fit py-3 text-white h-full font-bold text-sm px-4",
+                  (!canSubmit || isSubmitting || hasSubmitted) &&
+                    "bg-slate-400 cursor-not-allowed"
+                )}
+              >
                 Finish Exam
               </button>
             </div>
@@ -271,18 +265,48 @@ const ExamIdPage = ({
               </div>
             ))}
             <div className="flex flex-col justify-center items-center w-full space-y-3">
+              {hasSubmitted && (
+                <p>
+                  {`You scored Percentage ${scorePercentage.toFixed(2)}% ${
+                    isBeforeCourseExam
+                      ? "Your score will be added and aggregated with the score you get when you take the exam after learning the course"
+                      : hasTakenTheExamBefore
+                      ? "This score will be compared to your previous score and your progress calculated"
+                      : "Congratulations!"
+                  }
+              `}
+                </p>
+              )}
               <p className="">Are you confident that you are done?</p>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className={cn(
-                  "bg-teal-500 text-white w-fit font-bold text-sm px-5 py-3 rounded-lg",
-                  (!canSubmit || isSubmitting || hasSubmitted) &&
-                    "bg-slate-400 cursor-not-allowed"
-                )}
-              >
-                Submit
-              </button>
+              <div className="flex flex-row space-x-4 items-center">
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className={cn(
+                    "bg-teal-500 text-white w-fit font-bold text-sm px-5 py-3 rounded-md",
+                    (!canSubmit || isSubmitting || hasSubmitted) &&
+                      "bg-slate-400 cursor-not-allowed"
+                  )}
+                >
+                  Submit
+                </button>
+                {answeredQuestions === exam?.questions.length &&
+                  hasSubmitted &&
+                  certificateId !== "" && (
+                    <PrepareCertificateModal
+                      courseId={params.courseId}
+                      examId={params.examId}
+                      certificateId={certificateId}
+                    >
+                      <Button
+                        size="lg"
+                        className="bg-sky-500 text-white hover:bg-sky-400"
+                      >
+                        Get your certificate
+                      </Button>
+                    </PrepareCertificateModal>
+                  )}
+              </div>
             </div>
           </div>
         </div>
