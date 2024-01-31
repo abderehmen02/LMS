@@ -30,7 +30,6 @@ export async function POST(
     const certificate = await db.certificate.create({
       data: {
         examId: params.examId,
-        userId,
         courseTitle: exam.course.title,
       },
     });

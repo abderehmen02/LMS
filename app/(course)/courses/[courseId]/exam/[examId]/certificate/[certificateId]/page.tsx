@@ -27,10 +27,14 @@ const CertificatePage = ({
       setisGettingCertificate(true);
       try {
         const response = await axios.get(
-          `/api/courses/${params.courseId}/exam//${params.examId}/certificate/${params.certificateId}}`
+          `/api/courses/${params.courseId}/exam//${params.examId}/certificate/${params.certificateId}`
         );
 
         setCertificate(response.data);
+
+        if (!response.data) {
+          redirect(`/courses/${params.courseId}`);
+        }
 
         console.log("====================================");
         console.log(response.data);
@@ -78,7 +82,7 @@ const CertificatePage = ({
           </p>
         </div>
       ) : certificate ? (
-        <div className="flex flex-col space-y-8 ml-10 mb-8 mt-8 mr-8">
+        <div className="flex flex-col space-y-8 ml-10 pb-8 mt-8 mr-8">
           <button
             className="self-end rounded-lg text-white font-bold bg-emerald-600 max-w-fit py-2 px-3"
             onClick={handleDownload}
@@ -88,9 +92,9 @@ const CertificatePage = ({
           <div
             ref={htmlRef}
             id="certificate"
-            className="w-full h-[450px] shadow-lg flex"
+            className="w-full h-[450px] shadow-lg flex flex-row-reverse text-right"
           >
-            <div className="h-full flex-[.9] flex flex-col justify-center px-12 pt-2 pb-12 mb-12 space-y-4">
+            <div className="h-full flex-[.9] flex flex-col items-end justify-center px-12 pt-2 pb-12 mb-12 space-y-4">
               <div className="flex -space-x-3">
                 <p className="font-extrabold text-sky-700 text-5xl italic">L</p>
                 <p className="font-extrabold text-green-700 text-5xl">M</p>
@@ -148,14 +152,7 @@ const CertificatePage = ({
             </div>
           </div>
         </div>
-      ) : (
-        <div className="flex items-center justify-center h-full w-full">
-          <p className="font-bold text-xl text-slate-500">
-            No certificate found for this course. You will be notified when the
-            certificate is ready.
-          </p>
-        </div>
-      )}
+      ) : null}
     </>
   );
 };

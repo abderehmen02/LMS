@@ -53,6 +53,8 @@ export const OptionForm = ({
 
   const router = useRouter();
 
+  const hasReachedMaxOptions = initialData.options.length === 4;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -118,7 +120,7 @@ export const OptionForm = ({
         <Button onClick={toggleCreating} variant="ghost">
           {isCreating ? (
             <>Cancel</>
-          ) : (
+          ) : hasReachedMaxOptions ? null : (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
               Add an option

@@ -8,6 +8,9 @@ export async function htmlToPdf(htmlElement: HTMLElement) {
     throw new Error("HTML element not found");
   }
 
+  // input.style.height = "794px";
+  // input.style.width = "1123px";
+
   return new Promise((resolve, reject) => {
     html2canvas(input, { scale: 2 })
       .then((canvas) => {
@@ -15,9 +18,9 @@ export async function htmlToPdf(htmlElement: HTMLElement) {
         const pdf = new jsPDF({
           orientation: "landscape",
           unit: "mm",
-          format: [297, 210],
+          format: [297, 180],
         });
-        pdf.addImage(imgData, "PNG", 0, 0, 297, 210);
+        pdf.addImage(imgData, "PNG", 0, 0, 297, 180);
         resolve(pdf.output("blob"));
       })
       .catch((error) => {

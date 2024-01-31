@@ -35,16 +35,6 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const optionQuestion = await db.examQuestion.findUnique({
-      where: {
-        id: params.questionId,
-        examId: params.examId,
-      },
-      include: {
-        options: true,
-      },
-    });
-
     const option = await db.examQuestionOption.findUnique({
       where: {
         id: params.optionId,
@@ -61,7 +51,17 @@ export async function DELETE(
       },
     });
 
-    if (optionQuestion && optionQuestion?.options.length < 4) {
+    const optionQuestion = await db.examQuestion.findUnique({
+      where: {
+        id: params.questionId,
+        examId: params.examId,
+      },
+      include: {
+        options: true,
+      },
+    });
+
+    if (optionQuestion && optionQuestion?.options.length < 3) {
       await db.examQuestion.update({
         where: {
           id: params.questionId,

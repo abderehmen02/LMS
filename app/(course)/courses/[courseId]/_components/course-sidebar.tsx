@@ -64,7 +64,8 @@ export const CourseSidebar = async ({
   });
 
   const certificateId = exam?.certificate?.find(
-    (certificate) => certificate.userId === userId
+    (certificate) =>
+      certificate.userId === userId && certificate.nameOfStudent != null
   );
 
   const hasCertificate = certificateId != undefined;
@@ -141,7 +142,7 @@ export const CourseSidebar = async ({
               </Link>
             ) : (
               <Link
-                href={`/courses/${course.id}/exam/${exam.id}}`}
+                href={`/courses/${course.id}/exam/${exam.id}`}
                 prefetch={false}
                 className={cn(
                   "flex items-center text-right gap-x-2 px-4 bg-slate-500/20 text-slate-500 text-sm font-[500] py-4 transition-all hover:text-slate-600 hover:bg-slate-500/20",

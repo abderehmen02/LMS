@@ -40,7 +40,6 @@ const ChapterIdPage = async ({
   const requiredFields = [
     chapter.title,
     chapter.description,
-    chapter.lessons,
     chapter.lessons.some((lesson) => lesson.isPublished),
   ];
 

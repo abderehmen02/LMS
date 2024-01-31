@@ -83,9 +83,7 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  {
-    params,
-  }: { params: { courseId: string; examId: string; certificateId: string } }
+  { params }: { params: { examId: string; certificateId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -95,12 +93,18 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    console.log("====================================");
+    console.log(params.examId);
+    console.log(params.certificateId);
+    console.log("====================================");
+
     const certificate = await db.certificate.update({
       where: {
         id: params.certificateId,
         examId: params.examId,
       },
       data: {
+        userId,
         ...values,
       },
     });

@@ -149,7 +149,7 @@ export const OptionList = ({
                   <div
                     className={cn(
                       "flex items-center bg-sky-100 border-sky-200 text-sky-700 gap-x-2 border rounded-md mb-4 text-sm",
-                      parseInt(answer) === option.position &&
+                      parseInt(answer) === index + 1 &&
                         "bg-green-100 border-green-200 text-green-700",
                       isDeleting &&
                         currentOption?.id === option.id &&

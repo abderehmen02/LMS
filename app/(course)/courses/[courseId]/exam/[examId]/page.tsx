@@ -126,6 +126,8 @@ const ExamIdPage = ({
     if (hasSubmitted) return;
     const totalQuestions = exam?.questions.length;
 
+    let numberOfCorrectAnswers = 0;
+
     if (!totalQuestions) return;
 
     exam?.questions.forEach((question) => {
@@ -134,17 +136,20 @@ const ExamIdPage = ({
       const correctAnswerPosition = parseInt(question.answer);
 
       if (userSelectedPosition !== undefined) {
-        setAnswersQuestions(answeredQuestions + 1);
+        setAnswersQuestions((prev) => prev + 1);
 
         if (userSelectedPosition === correctAnswerPosition) {
-          setCorrectAnswers(correctAnswers + 1);
+          setCorrectAnswers((prev) => prev + 1);
+          numberOfCorrectAnswers++;
         } else {
-          setWrongAnswers(wrongAnswers + 1);
+          setWrongAnswers((prev) => prev + 1);
         }
       }
     });
 
-    setScorePercentage((correctAnswers / totalQuestions) * 100);
+    setScorePercentage(
+      (prev) => prev + (numberOfCorrectAnswers / totalQuestions) * 100
+    );
   }, [exam?.questions, userSelections, hasSubmitted]);
 
   useEffect(() => {
@@ -170,7 +175,7 @@ const ExamIdPage = ({
         );
 
         console.log("====================================");
-        console.log(response.data);
+        console.log(response.data.exams.certificate);
         console.log("====================================");
       } catch (error) {
         console.log("====================================");
@@ -237,14 +242,14 @@ const ExamIdPage = ({
                   </div>
                 )}
                 <div className="border border-slate-200 rounded-lg p-4 space-y-4 w-fit mb-6">
-                  {question.options.map((option) => (
+                  {question.options.map((option, index) => (
                     <label key={option.position} className="block">
                       {hasSubmitted || isSubmitting ? (
                         <input
                           className="mr-2"
                           type="radio"
                           name={question.id}
-                          value={option.position}
+                          value={index + 1}
                           disabled
                         />
                       ) : (
@@ -252,9 +257,9 @@ const ExamIdPage = ({
                           className="mr-2"
                           type="radio"
                           name={question.id}
-                          value={option.position}
+                          value={index + 1}
                           onChange={() =>
-                            handleOptionChange(question.id, option.position)
+                            handleOptionChange(question.id, index + 1)
                           }
                         />
                       )}
@@ -292,7 +297,8 @@ const ExamIdPage = ({
                 </button>
                 {answeredQuestions === exam?.questions.length &&
                   hasSubmitted &&
-                  certificateId !== "" && (
+                  certificateId !== "" &&
+                  certificateId != undefined && (
                     <PrepareCertificateModal
                       courseId={params.courseId}
                       examId={params.examId}
