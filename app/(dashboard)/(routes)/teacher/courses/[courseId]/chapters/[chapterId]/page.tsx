@@ -1,7 +1,14 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, LayoutDashboard, Video } from "lucide-react";
+import {
+  ArrowLeft,
+  BookPlus,
+  LayoutDashboard,
+  ListEnd,
+  LucideBookPlus,
+  Video,
+} from "lucide-react";
 
 import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
@@ -29,7 +36,11 @@ const ChapterIdPage = async ({
       courseId: params.courseId,
     },
     include: {
-      lessons: true,
+      lessons: {
+        orderBy: {
+          position: "asc",
+        },
+      },
     },
   });
 
@@ -105,8 +116,8 @@ const ChapterIdPage = async ({
           </div>
           <div>
             <div className="flex items-center gap-x-2">
-              <IconBadge icon={Video} />
-              <h2 className="text-xl">Add a video</h2>
+              <IconBadge icon={LucideBookPlus} />
+              <h2 className="text-xl">Add a lesson</h2>
             </div>
             <LessonsForm
               initialData={chapter}

@@ -6,15 +6,14 @@ import { Pencil, PlusCircle, Video } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Lesson, MuxData } from "@prisma/client";
-import Image from "next/image";
+import { Lesson } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
 import ReactPlayer from "react-player";
 
 interface LessonVideoFormProps {
-  initialData: Lesson & { muxData?: MuxData | null };
+  initialData: Lesson;
   courseId: string;
   chapterId: string;
   lessonId: string;
@@ -97,6 +96,7 @@ export const LessonVideoForm = ({
               }
             }}
           />
+
           <div className="text-xs text-muted-foreground mt-4">
             Upload this lesson&apos;s video
           </div>

@@ -34,7 +34,7 @@ export async function PATCH(
       },
     });
 
-    if (!lesson || !lesson.title || !lesson.description || !lesson.videoUrl) {
+    if (!lesson || !lesson.title || (!lesson.description && !lesson.videoUrl)) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 

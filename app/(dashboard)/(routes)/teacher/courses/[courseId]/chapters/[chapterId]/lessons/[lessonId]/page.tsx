@@ -34,7 +34,7 @@ const LessonIdPage = async ({
     return redirect("/");
   }
 
-  const requiredFields = [lesson.title, lesson.description, lesson.videoUrl];
+  const requiredFields = [lesson.title, lesson.description || lesson.videoUrl];
 
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
@@ -65,7 +65,8 @@ const LessonIdPage = async ({
               <div className="flex flex-col gap-y-2">
                 <h1 className="text-2xl font-medium">Lesson Creation</h1>
                 <span className="text-sm text-slate-700">
-                  Complete all fields {completionText}
+                  Complete all fields {completionText} - You must have a
+                  description or a video
                 </span>
               </div>
               <LessonActions

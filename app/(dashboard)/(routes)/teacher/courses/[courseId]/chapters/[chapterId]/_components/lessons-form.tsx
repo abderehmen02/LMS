@@ -64,6 +64,7 @@ export const LessonsForm = ({
       );
       toast.success("Lesson created");
       toggleCreating();
+      form.setValue("title", "");
       router.refresh();
     } catch {
       toast.error("Something went wrong");
