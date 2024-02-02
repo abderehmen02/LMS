@@ -8,7 +8,7 @@ import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { ExamQuestion, ExamQuestionOption } from "@prisma/client";
+import { QuizQuestion, QuizQuestionOption } from "@prisma/client";
 
 import {
   Form,
@@ -25,9 +25,10 @@ import { Input } from "@/components/ui/input";
 import { OptionList } from "./option-list";
 
 interface OptionFormProps {
-  initialData: ExamQuestion & { options: ExamQuestionOption[] };
+  initialData: QuizQuestion & { options: QuizQuestionOption[] };
   courseId: string;
-  examId: string;
+  quizId: string;
+  chapterId: string;
   questionId: string;
 }
 
@@ -37,15 +38,16 @@ const formSchema = z.object({
 
 export const OptionForm = ({
   initialData,
-  examId,
+  quizId,
   courseId,
   questionId,
+  chapterId,
 }: OptionFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const [optionToBeEdited, setOptionToBeEdited] =
-    useState<ExamQuestionOption>();
+    useState<QuizQuestionOption>();
 
   const toggleCreating = () => {
     setIsCreating((current) => !current);
@@ -67,7 +69,7 @@ export const OptionForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.post(
-        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/options`,
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}/options`,
         values
       );
       toast.success("Question option created");
@@ -86,7 +88,7 @@ export const OptionForm = ({
       setIsUpdating(true);
 
       await axios.put(
-        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/options/reorder`,
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}/options/reorder`,
         {
           list: updateData,
         }
@@ -100,9 +102,9 @@ export const OptionForm = ({
     }
   };
 
-  const onEdit = (option: ExamQuestionOption) => {
+  const onEdit = (option: QuizQuestionOption) => {
     setOptionToBeEdited(option);
-    // router.push(`/teacher/courses/${courseId}/exam/${examId}/questions/${id}`);
+    // router.push(`/teacher/courses/${courseId}/exam/${quizId}/questions/${id}`);
   };
 
   return (
@@ -169,7 +171,8 @@ export const OptionForm = ({
           <OptionList
             answer={initialData.answer}
             courseId={courseId}
-            examId={examId}
+            chapterId={chapterId}
+            quizId={quizId}
             questionId={questionId}
             onReorder={onReorder}
             items={initialData.options || []}

@@ -4,9 +4,10 @@ import {
   Course,
   Lesson,
   UserProgress,
-  Certificate,
+  Quiz,
+  UserQuizPoints,
 } from "@prisma/client";
-import { redirect, usePathname } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
 import { CourseProgress } from "@/components/course-progress";
@@ -23,6 +24,7 @@ interface CourseSidebarProps {
       lessons: (Lesson & {
         userProgress: UserProgress[] | null;
       })[];
+      quiz: (Quiz & { userQuizPoints: UserQuizPoints[] | null }) | null;
     })[];
   };
   progressCount: number;
@@ -43,6 +45,7 @@ export const CourseSidebar = async ({
 
   const takingExamination = pathname?.includes("exam");
   const viewingCertificate = pathname?.includes("certificate");
+  const takingQuiz = pathname?.includes("quiz");
 
   const exam = await db.exam.findUnique({
     where: {
@@ -51,7 +54,6 @@ export const CourseSidebar = async ({
     },
     include: {
       certificate: true,
-
       questions: {
         where: {
           isPublished: true,
@@ -90,11 +92,12 @@ export const CourseSidebar = async ({
             label={chapter.title}
             courseId={course.id}
             lessons={chapter.lessons}
+            quiz={chapter.quiz}
             exam={exam}
           />
         ))}
       </div>
-      {!takingExamination && !viewingCertificate && (
+      {!takingExamination && !viewingCertificate && !takingQuiz && (
         <div
           className={`mt-auto border-t border-teal-600 bg-teal-100/50 ${
             !hasCertificate && "pt-4"

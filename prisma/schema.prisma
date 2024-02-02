@@ -62,7 +62,7 @@ model Chapter {
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   lessons Lesson[]
-  quiz    Quiz[]
+  quiz    Quiz?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -128,7 +128,7 @@ model Quiz {
   isPublished Boolean @default(false)
   userId      String? @default("nil")
 
-  chapterId String
+  chapterId String  @unique
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   userQuizPoints UserQuizPoints[]
@@ -183,7 +183,7 @@ model QuizQuestion {
   options     QuizQuestionOption[]
   isPublished Boolean              @default(false)
   position    Int
-  answer      String               @default("0")
+  answer      String               @default("1")
   explanation String?
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt

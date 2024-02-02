@@ -48,19 +48,21 @@ const LessonIdPage = async ({
         <Banner variant="success" label="You already completed this lesson." />
       )}
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
-        <div className="p-4">
-          <VideoPlayer
-            chapterId={params.chapterId}
-            title={chapter.title}
-            lessonId={lesson.id}
-            courseId={params.courseId}
-            nextLessonId={nextLesson?.id}
-            nextChapterId={nextChapter?.id}
-            nextChapterFirstLessonId={nextChapter?.lessons[0].id}
-            completeOnEnd={completeOnEnd}
-            url={lesson.videoUrl}
-          />
-        </div>
+        {lesson.videoUrl && (
+          <div className="p-4">
+            <VideoPlayer
+              chapterId={params.chapterId}
+              title={chapter.title}
+              lessonId={lesson.id}
+              courseId={params.courseId}
+              nextLessonId={nextLesson?.id}
+              nextChapterId={nextChapter?.id}
+              nextChapterFirstLessonId={nextChapter?.lessons[0].id}
+              completeOnEnd={completeOnEnd}
+              url={lesson.videoUrl}
+            />
+          </div>
+        )}
         <div className="space-y-4">
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
             <div>

@@ -23,6 +23,9 @@ export async function POST(
     });
 
     if (!courseOwner) {
+      console.log("====================================");
+      console.log("HAS_NO_COURSE", userId, params.courseId);
+      console.log("====================================");
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

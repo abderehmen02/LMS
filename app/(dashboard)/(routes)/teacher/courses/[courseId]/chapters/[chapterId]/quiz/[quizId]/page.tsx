@@ -63,7 +63,7 @@ const QuizIdPage = async ({
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              href={`/teacher/courses/${params.courseId}/chapter/${params.chapterId}`}
+              href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -79,6 +79,7 @@ const QuizIdPage = async ({
               <QuizActions
                 disabled={!isComplete}
                 chapterId={params.chapterId}
+                courseId={params.courseId}
                 quizId={params.quizId}
                 isPublished={quiz.isPublished}
               />
@@ -113,6 +114,7 @@ const QuizIdPage = async ({
               initialData={quiz}
               quizId={quiz.id}
               chapterId={params.chapterId}
+              courseId={params.courseId}
             />
           </div>
         </div>

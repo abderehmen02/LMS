@@ -1,4 +1,11 @@
-import { Chapter, Course, Lesson, UserProgress } from "@prisma/client";
+import {
+  Chapter,
+  Course,
+  Lesson,
+  Quiz,
+  UserProgress,
+  UserQuizPoints,
+} from "@prisma/client";
 
 import { NavbarRoutes } from "@/components/navbar-routes";
 
@@ -10,6 +17,7 @@ interface CourseNavbarProps {
       lessons: (Lesson & {
         userProgress: UserProgress[] | null;
       })[];
+      quiz: (Quiz & { userQuizPoints: UserQuizPoints[] | null }) | null;
     })[];
   };
   progressCount: number;

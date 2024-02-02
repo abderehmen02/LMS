@@ -8,7 +8,7 @@ export async function DELETE(
   req: Request,
   {
     params,
-  }: { params: { courseId: string; examId: string; questionId: string } }
+  }: { params: { courseId: string; quizId: string; questionId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -28,10 +28,10 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const question = await db.examQuestion.findUnique({
+    const question = await db.quizQuestion.findUnique({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
     });
 
@@ -39,23 +39,23 @@ export async function DELETE(
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    const deletedQuestion = await db.examQuestion.delete({
+    const deletedQuestion = await db.quizQuestion.delete({
       where: {
         id: params.questionId,
       },
     });
 
-    const publishedQuestionInExam = await db.examQuestion.findMany({
+    const publishedQuestionInExam = await db.quizQuestion.findMany({
       where: {
-        examId: params.examId,
+        quizId: params.quizId,
         isPublished: true,
       },
     });
 
     if (!publishedQuestionInExam.length) {
-      await db.examQuestion.update({
+      await db.quizQuestion.update({
         where: {
-          id: params.examId,
+          id: params.quizId,
         },
         data: {
           isPublished: false,
@@ -74,7 +74,7 @@ export async function PATCH(
   req: Request,
   {
     params,
-  }: { params: { courseId: string; examId: string; questionId: string } }
+  }: { params: { courseId: string; quizId: string; questionId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -95,10 +95,10 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const question = await db.examQuestion.update({
+    const question = await db.quizQuestion.update({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
       data: {
         ...values,

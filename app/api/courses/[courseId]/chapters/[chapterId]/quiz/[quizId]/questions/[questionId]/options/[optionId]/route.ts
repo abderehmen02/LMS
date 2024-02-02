@@ -11,7 +11,7 @@ export async function DELETE(
   }: {
     params: {
       courseId: string;
-      examId: string;
+      quizId: string;
       questionId: string;
       optionId: string;
     };
@@ -35,7 +35,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const option = await db.examQuestionOption.findUnique({
+    const option = await db.quizQuestionOption.findUnique({
       where: {
         id: params.optionId,
         questionId: params.questionId,
@@ -45,16 +45,16 @@ export async function DELETE(
     if (!option) {
       return new NextResponse("Not Found", { status: 404 });
     }
-    const deletedOption = await db.examQuestionOption.delete({
+    const deletedOption = await db.quizQuestionOption.delete({
       where: {
         id: params.optionId,
       },
     });
 
-    const optionQuestion = await db.examQuestion.findUnique({
+    const optionQuestion = await db.quizQuestion.findUnique({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
       include: {
         options: true,
@@ -62,10 +62,10 @@ export async function DELETE(
     });
 
     if (optionQuestion && optionQuestion?.options.length < 3) {
-      await db.examQuestion.update({
+      await db.quizQuestion.update({
         where: {
           id: params.questionId,
-          examId: params.examId,
+          quizId: params.quizId,
         },
         data: {
           isPublished: false,
@@ -87,7 +87,7 @@ export async function PATCH(
   }: {
     params: {
       courseId: string;
-      examId: string;
+      quizId: string;
       questionId: string;
       optionId: string;
     };
@@ -112,7 +112,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const option = await db.examQuestionOption.update({
+    const option = await db.quizQuestionOption.update({
       where: {
         id: params.optionId,
         questionId: params.questionId,

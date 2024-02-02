@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   ListEnd,
   LucideBookPlus,
+  ShieldQuestion,
   Video,
 } from "lucide-react";
 
@@ -18,6 +19,8 @@ import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterDescriptionForm } from "./_components/chapter-description-form";
 import { ChapterActions } from "./_components/chapter-actions";
 import { LessonsForm } from "./_components/lessons-form";
+import { QuizForm } from "./_components/quiz-form";
+import { FcQuestions } from "react-icons/fc";
 
 const ChapterIdPage = async ({
   params,
@@ -36,6 +39,7 @@ const ChapterIdPage = async ({
       courseId: params.courseId,
     },
     include: {
+      quiz: true,
       lessons: {
         orderBy: {
           position: "asc",
@@ -123,6 +127,17 @@ const ChapterIdPage = async ({
               initialData={chapter}
               chapterId={chapter.id}
               courseId={params.courseId}
+            />
+          </div>
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={FcQuestions} />
+              <h2 className="text-xl">Chapter quiz (Optional)</h2>
+            </div>
+            <QuizForm
+              initialData={chapter}
+              courseId={params.courseId}
+              chapterId={chapter.id}
             />
           </div>
         </div>

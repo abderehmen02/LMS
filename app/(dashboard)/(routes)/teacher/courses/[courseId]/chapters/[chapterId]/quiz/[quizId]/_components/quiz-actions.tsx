@@ -12,6 +12,7 @@ import { ConfirmModal } from "@/components/modals/confirm-modal";
 interface QuizActionsProps {
   disabled: boolean;
   chapterId: string;
+  courseId: string;
   quizId: string;
   isPublished: boolean;
 }
@@ -19,6 +20,7 @@ interface QuizActionsProps {
 export const QuizActions = ({
   disabled,
   chapterId,
+  courseId,
   quizId,
   isPublished,
 }: QuizActionsProps) => {
@@ -30,10 +32,14 @@ export const QuizActions = ({
       setIsLoading(true);
 
       if (isPublished) {
-        await axios.patch(`/api/courses/${chapterId}/quiz/${quizId}/unpublish`);
+        await axios.patch(
+          `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/unpublish`
+        );
         toast.success("Quiz unpublished");
       } else {
-        await axios.patch(`/api/courses/${chapterId}/quiz/${quizId}/publish`);
+        await axios.patch(
+          `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/publish`
+        );
         toast.success("Quiz published");
       }
 

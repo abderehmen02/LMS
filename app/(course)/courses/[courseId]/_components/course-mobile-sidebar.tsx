@@ -1,5 +1,12 @@
 import { Menu } from "lucide-react";
-import { Chapter, Course, Lesson, UserProgress } from "@prisma/client";
+import {
+  Chapter,
+  Course,
+  Lesson,
+  Quiz,
+  UserProgress,
+  UserQuizPoints,
+} from "@prisma/client";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -11,6 +18,7 @@ interface CourseMobileSidebarProps {
       lessons: (Lesson & {
         userProgress: UserProgress[] | null;
       })[];
+      quiz: (Quiz & { userQuizPoints: UserQuizPoints[] | null }) | null;
     })[];
   };
   progressCount: number;

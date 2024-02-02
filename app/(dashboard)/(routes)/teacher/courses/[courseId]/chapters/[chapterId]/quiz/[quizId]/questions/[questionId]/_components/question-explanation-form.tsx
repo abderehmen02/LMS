@@ -8,7 +8,7 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { ExamQuestion } from "@prisma/client";
+import { QuizQuestion } from "@prisma/client";
 
 import {
   Form,
@@ -23,9 +23,10 @@ import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
 
 interface QuestionExplanationFormProps {
-  initialData: ExamQuestion;
+  initialData: QuizQuestion;
   courseId: string;
-  examId: string;
+  quizId: string;
+  chapterId: string;
   questionId: string;
 }
 
@@ -36,7 +37,8 @@ const formSchema = z.object({
 export const QuestionExplanationForm = ({
   initialData,
   courseId,
-  examId,
+  quizId,
+  chapterId,
   questionId,
 }: QuestionExplanationFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -57,7 +59,7 @@ export const QuestionExplanationForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(
-        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}`,
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}`,
         values
       );
       toast.success("Question updated");

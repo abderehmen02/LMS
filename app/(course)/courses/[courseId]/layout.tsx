@@ -45,6 +45,18 @@ const CourseLayout = async ({
               position: "asc",
             },
           },
+          quiz: {
+            where: {
+              isPublished: true,
+            },
+            include: {
+              userQuizPoints: {
+                where: {
+                  userId,
+                },
+              },
+            },
+          },
         },
         orderBy: {
           position: "asc",

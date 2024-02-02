@@ -7,7 +7,7 @@ export async function PATCH(
   req: Request,
   {
     params,
-  }: { params: { courseId: string; examId: string; questionId: string } }
+  }: { params: { courseId: string; quizId: string; questionId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -27,19 +27,19 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const unpublishedQuestion = await db.examQuestion.update({
+    const unpublishedQuestion = await db.quizQuestion.update({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
       data: {
         isPublished: false,
       },
     });
 
-    const publishedQuestionInExam = await db.examQuestion.findMany({
+    const publishedQuestionInExam = await db.quizQuestion.findMany({
       where: {
-        examId: params.examId,
+        quizId: params.quizId,
         isPublished: true,
       },
     });

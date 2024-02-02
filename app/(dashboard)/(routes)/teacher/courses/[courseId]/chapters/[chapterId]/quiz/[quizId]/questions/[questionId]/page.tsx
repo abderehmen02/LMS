@@ -16,7 +16,12 @@ import { OptionForm } from "./_components/option-form";
 const QuestinoIdPage = async ({
   params,
 }: {
-  params: { examId: string; questionId: string; courseId: string };
+  params: {
+    chapterId: string;
+    quizId: string;
+    questionId: string;
+    courseId: string;
+  };
 }) => {
   const { userId } = auth();
 
@@ -24,10 +29,10 @@ const QuestinoIdPage = async ({
     return redirect("/");
   }
 
-  const question = await db.examQuestion.findUnique({
+  const question = await db.quizQuestion.findUnique({
     where: {
       id: params.questionId,
-      examId: params.examId,
+      quizId: params.quizId,
     },
     include: {
       options: {
@@ -67,11 +72,11 @@ const QuestinoIdPage = async ({
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              href={`/teacher/courses/${params.courseId}/exam/${params.examId}`}
+              href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}/quiz/${params.quizId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to exam setup
+              Back to quiz setup
             </Link>
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col gap-y-2">
@@ -83,7 +88,8 @@ const QuestinoIdPage = async ({
               <QuestionActions
                 disabled={!isComplete}
                 courseId={params.courseId}
-                examId={params.examId}
+                quizId={params.quizId}
+                chapterId={params.chapterId}
                 questionId={params.questionId}
                 isPublished={question.isPublished}
               />
@@ -100,19 +106,22 @@ const QuestinoIdPage = async ({
               <QuestionPromptForm
                 initialData={question}
                 courseId={params.courseId}
-                examId={params.examId}
+                quizId={params.quizId}
+                chapterId={params.chapterId}
                 questionId={params.questionId}
               />
               <QuestionAnswerForm
                 initialData={question}
                 courseId={params.courseId}
-                examId={params.examId}
+                quizId={params.quizId}
+                chapterId={params.chapterId}
                 questionId={params.questionId}
               />
               <QuestionExplanationForm
                 initialData={question}
                 courseId={params.courseId}
-                examId={params.examId}
+                quizId={params.quizId}
+                chapterId={params.chapterId}
                 questionId={params.questionId}
               />
             </div>
@@ -125,7 +134,8 @@ const QuestinoIdPage = async ({
             <OptionForm
               initialData={question}
               courseId={params.courseId}
-              examId={params.examId}
+              quizId={params.quizId}
+              chapterId={params.chapterId}
               questionId={params.questionId}
             />
           </div>

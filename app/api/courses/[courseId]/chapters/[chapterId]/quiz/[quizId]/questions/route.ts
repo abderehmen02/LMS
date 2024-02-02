@@ -5,7 +5,9 @@ import { db } from "@/lib/db";
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string; examId: string } }
+  {
+    params,
+  }: { params: { courseId: string; chapterId: string; quizId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -15,20 +17,20 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const questionExam = await db.exam.findUnique({
+    const questionQuiz = await db.quiz.findUnique({
       where: {
-        id: params.examId,
-        courseId: params.courseId,
+        id: params.quizId,
+        chapterId: params.chapterId,
       },
     });
 
-    if (!questionExam) {
+    if (!questionQuiz) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const lastQuestion = await db.examQuestion.findFirst({
+    const lastQuestion = await db.quizQuestion.findFirst({
       where: {
-        examId: params.examId,
+        quizId: params.quizId,
       },
       orderBy: {
         position: "desc",
@@ -37,17 +39,17 @@ export async function POST(
 
     const newPosition = lastQuestion ? lastQuestion.position + 1 : 1;
 
-    const question = await db.examQuestion.create({
+    const question = await db.quizQuestion.create({
       data: {
         prompt,
-        examId: params.examId,
+        quizId: params.quizId,
         position: newPosition,
       },
     });
 
     return NextResponse.json(question);
   } catch (error) {
-    console.log("[CHAPTERS]", error);
+    console.log("[QUIZ]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 
 export async function POST(
   req: Request,
-  { params }: { params: { examId: string; questionId: string } }
+  { params }: { params: { quizId: string; questionId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -15,10 +15,10 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const optionQuestion = await db.examQuestion.findUnique({
+    const optionQuestion = await db.quizQuestion.findUnique({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
       include: {
         options: true,
@@ -29,7 +29,7 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const lastOption = await db.examQuestionOption.findFirst({
+    const lastOption = await db.quizQuestionOption.findFirst({
       where: {
         questionId: params.questionId,
       },
@@ -45,7 +45,7 @@ export async function POST(
         status: 400,
       });
     } else {
-      const option = await db.examQuestionOption.create({
+      const option = await db.quizQuestionOption.create({
         data: {
           text,
           questionId: params.questionId,

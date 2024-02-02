@@ -29,12 +29,15 @@ export async function PATCH(
 
     const quiz = await db.quiz.findUnique({
       where: {
-        id: params.chapterId,
-        chapterId: params.courseId,
+        id: params.quizId,
+        chapterId: params.chapterId,
+      },
+      include: {
+        questions: true,
       },
     });
 
-    if (!quiz || !quiz.title || !quiz.description) {
+    if (!quiz || !quiz.title || !quiz.description || !quiz.questions) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 

@@ -31,7 +31,7 @@ export const getCourses = async ({
                 isPublished: true,
                 AND: {
                   lessons: {
-                    every: {
+                    some: {
                       isPublished: true,
                     },
                   },
@@ -46,6 +46,11 @@ export const getCourses = async ({
         categoryId,
       },
       include: {
+        exams: {
+          where: {
+            userId,
+          },
+        },
         category: true,
         chapters: {
           where: {
@@ -64,11 +69,21 @@ export const getCourses = async ({
     const coursesWithProgress: CourseWithProgressWithCategory[] =
       await Promise.all(
         courses.map(async (course) => {
-          const courseProgressPercentage = await getProgress(userId, course.id);
+          let courseProgressPercentage = await getProgress(userId, course.id);
           // const courseProgressPercentage =
           //   chapterProgressPercentage.reduce((acc, progress) => acc + progress, 0) /
           //   chapterProgressPercentage.length;
 
+          if (
+            course.exams?.beforeScore &&
+            course.exams?.beforeScore >= 50 &&
+            courseProgressPercentage < 100
+          ) {
+            courseProgressPercentage = Math.min(
+              courseProgressPercentage + 10,
+              100
+            );
+          }
           return {
             ...course,
             progress: courseProgressPercentage,

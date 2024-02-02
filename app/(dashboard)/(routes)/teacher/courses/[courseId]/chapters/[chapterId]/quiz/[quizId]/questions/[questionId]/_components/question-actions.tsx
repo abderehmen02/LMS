@@ -12,7 +12,8 @@ import { ConfirmModal } from "@/components/modals/confirm-modal";
 interface QuestionActionsProps {
   disabled: boolean;
   courseId: string;
-  examId: string;
+  quizId: string;
+  chapterId: string;
   questionId: string;
   isPublished: boolean;
 }
@@ -20,9 +21,10 @@ interface QuestionActionsProps {
 export const QuestionActions = ({
   disabled,
   courseId,
-  examId,
+  quizId,
   questionId,
   isPublished,
+  chapterId,
 }: QuestionActionsProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -33,12 +35,12 @@ export const QuestionActions = ({
 
       if (isPublished) {
         await axios.patch(
-          `/api/courses/${courseId}/chapters/${examId}/questions/${questionId}/unpublish`
+          `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}/unpublish`
         );
         toast.success("Question unpublished");
       } else {
         await axios.patch(
-          `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/publish`
+          `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}/publish`
         );
         toast.success("Question published");
       }
@@ -56,12 +58,14 @@ export const QuestionActions = ({
       setIsLoading(true);
 
       await axios.delete(
-        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}`
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}`
       );
 
       toast.success("Lesson deleted");
       router.refresh();
-      router.push(`/teacher/courses/${courseId}/exam/${examId}`);
+      router.push(
+        `/teacher/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}`
+      );
     } catch {
       toast.error("Something went wrong");
     } finally {

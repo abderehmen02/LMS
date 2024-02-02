@@ -37,7 +37,8 @@ import { useRouter } from "next/navigation";
 interface OptionListProps {
   answer: string;
   courseId: string;
-  examId: string;
+  quizId: string;
+  chapterId: string;
   questionId: string;
   items: ExamQuestionOption[];
   onReorder: (updateData: { id: string; position: number }[]) => void;
@@ -47,7 +48,8 @@ export const OptionList = ({
   answer,
   items,
   courseId,
-  examId,
+  quizId,
+  chapterId,
   questionId,
   onReorder,
 }: OptionListProps) => {
@@ -76,7 +78,7 @@ export const OptionList = ({
       setIsDeleting(true);
 
       await axios.delete(
-        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/options/${currentOption?.id}`
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}/options/${currentOption?.id}`
       );
 
       toast.success("Option deleted");
@@ -91,7 +93,7 @@ export const OptionList = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(
-        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/options/${currentOption?.id}`,
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}/options/${currentOption?.id}`,
         values
       );
       toast.success("Question option updated");

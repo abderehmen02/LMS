@@ -6,7 +6,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 
 import { cn } from "@/lib/utils";
-import { Lesson, Prisma, UserProgress } from "@prisma/client";
+import {
+  Lesson,
+  Prisma,
+  Quiz,
+  UserProgress,
+  UserQuizPoints,
+} from "@prisma/client";
 import {
   Accordion,
   AccordionContent,
@@ -32,6 +38,7 @@ interface CourseSidebarItemProps {
   lessons: (Lesson & {
     userProgress: UserProgress[] | null;
   })[];
+  quiz: (Quiz & { userQuizPoints: UserQuizPoints[] | null }) | null;
   exam: ExamWithQuestionAndOptions | null;
   label: string;
   id: string;
@@ -44,6 +51,7 @@ export const CourseSidebarItem = ({
   id,
   courseId,
   exam,
+  quiz,
 }: CourseSidebarItemProps) => {
   const pathname = usePathname();
   const router = useRouter();
@@ -59,10 +67,21 @@ export const CourseSidebarItem = ({
     )
   );
 
-  const onClick = (lessonId: string) => {
+  const hasTakenQuiz =
+    quiz &&
+    quiz.userQuizPoints?.find(
+      (userQuizPoint) => userQuizPoint.userId === userId && userQuizPoint.points
+    ) !== undefined;
+
+  const handleLessonClick = (lessonId: string) => {
     router.push(`/courses/${courseId}/chapters/${id}/lessons/${lessonId}`);
   };
-  const onChapterClick = () => {
+
+  const handleQuizClick = (quizId: string) => {
+    router.push(`/courses/${courseId}/chapters/${id}/quiz/${quizId}`);
+  };
+
+  const handleChapterClick = () => {
     router.push(`/courses/${courseId}/chapters/${id}`);
   };
 
@@ -71,7 +90,7 @@ export const CourseSidebarItem = ({
 
     const handleClick = () => {
       if (ref?.dataset.state === "open") {
-        onChapterClick();
+        handleChapterClick();
       }
     };
 
@@ -103,10 +122,10 @@ export const CourseSidebarItem = ({
             {lessons.map((lesson, index) => (
               <button
                 key={index}
-                onClick={() => onClick(lesson.id)}
+                onClick={() => handleLessonClick(lesson.id)}
                 type="button"
                 className={cn(
-                  "flex items-center justify-end w-full gap-x-2 text-slate-600 text-sm font-[500] transition-all px-4 hover:text-slate-700 hover:bg-slate-300/20 border-r-4 border-opacity-0 hover:border-opacity-100  border-sky-600 h-full",
+                  "flex items-center justify-end w-full gap-x-2 text-slate-600 text-sm font-[500] transition-all px-4 hover:text-slate-700 hover:bg-slate-300/20 border-r-4 border-opacity-0 hover:border-opacity-100  border-teal-600 h-full",
                   pathname?.includes(lesson.id) &&
                     "text-slate-700 bg-slate-200/20 hover:bg-slate-200/20 hover:text-slate-700",
                   pathname?.includes(lesson.id) &&
@@ -146,6 +165,35 @@ export const CourseSidebarItem = ({
                 </div>
               </button>
             ))}
+            {quiz && (
+              <button
+                onClick={() => {
+                  handleQuizClick(quiz.id);
+                }}
+                type="button"
+                className={cn(
+                  "flex mt-auto items-center justify-end w-full gap-x-2 text-yellow-600 text-sm font-[500] transition-all px-4 hover:text-yellow-700 hover:bg-yellow-300/20 border-r-4 border-opacity-0 hover:border-opacity-100  border-orange-600 h-full",
+
+                  hasTakenQuiz &&
+                    "text-emerald-700 bg-emerald-200/20 hover:bg-emerald-200/20 hover:text-emerald-700 border-teal-600"
+                )}
+              >
+                <div className="flex items-center justify-between text-right w-full gap-x-2 py-4">
+                  {hasTakenQuiz ? (
+                    <CheckCircle size={22} className={cn("text-emerald-500")} />
+                  ) : (
+                    <PlayCircle
+                      size={22}
+                      className={cn("text-yellow-600 hover:text-yellow-700")}
+                    />
+                  )}
+                  <p>
+                    <span>Quiz: </span>
+                    {quiz.title}
+                  </p>
+                </div>
+              </button>
+            )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>

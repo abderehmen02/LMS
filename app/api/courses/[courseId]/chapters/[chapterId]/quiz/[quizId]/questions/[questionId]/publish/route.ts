@@ -7,7 +7,7 @@ export async function PATCH(
   req: Request,
   {
     params,
-  }: { params: { courseId: string; examId: string; questionId: string } }
+  }: { params: { courseId: string; quizId: string; questionId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -27,10 +27,10 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const question = await db.examQuestion.findUnique({
+    const question = await db.quizQuestion.findUnique({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
       include: {
         options: true,
@@ -47,10 +47,10 @@ export async function PATCH(
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
-    const publishedQuestion = await db.examQuestion.update({
+    const publishedQuestion = await db.quizQuestion.update({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
       data: {
         isPublished: true,
@@ -59,7 +59,7 @@ export async function PATCH(
 
     return NextResponse.json(publishedQuestion);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[QUIZ_QUESTION_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

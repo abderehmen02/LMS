@@ -4,44 +4,41 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Loader2, PlusCircle } from "lucide-react";
+import { Loader2, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Quiz, QuizQuestion } from "@prisma/client";
+import { Chapter, Quiz } from "@prisma/client";
 
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-
-import { QuestionList } from "./question-list";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 
-interface QuestionFormProps {
-  initialData: Quiz & { questions: QuizQuestion[] };
+interface QuizFormProps {
+  initialData: Chapter & { quiz: Quiz | null };
   courseId: string;
   chapterId: string;
-  quizId: string;
 }
 
 const formSchema = z.object({
-  prompt: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
 });
 
-export const QuestionForm = ({
+export const QuizForm = ({
   initialData,
-  quizId,
-  chapterId,
   courseId,
-}: QuestionFormProps) => {
+  chapterId,
+}: QuizFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -54,7 +51,8 @@ export const QuestionForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      prompt: "",
+      title: "",
+      description: "",
     },
   });
 
@@ -62,40 +60,26 @@ export const QuestionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(
-        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions`,
+      const response = await axios.post(
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz`,
         values
       );
-      toast.success("Question created");
+      toast.success("Quiz created");
+
       toggleCreating();
+
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.log("====================================");
+      console.log(error);
+      console.log("====================================");
       toast.error("Something went wrong");
     }
   };
 
-  const onReorder = async (updateData: { id: string; position: number }[]) => {
-    try {
-      setIsUpdating(true);
-
-      await axios.put(
-        `/api/courses/${courseId}/chapters${chapterId}/quiz/${quizId}/questions/reorder`,
-        {
-          list: updateData,
-        }
-      );
-      toast.success("Questions reordered");
-      router.refresh();
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const onEdit = (id: string) => {
+  const onEdit = (id: string | undefined) => {
     router.push(
-      `/teacher/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${id}`
+      `/teacher/courses/${courseId}/chapters/${chapterId}/quiz/${id}`
     );
   };
 
@@ -107,17 +91,19 @@ export const QuestionForm = ({
         </div>
       )}
       <div className="font-medium flex items-center justify-between">
-        Chapter quiz question
-        <Button onClick={toggleCreating} variant="ghost">
-          {isCreating ? (
-            <>Cancel</>
-          ) : (
-            <>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add a question
-            </>
-          )}
-        </Button>
+        Chapter quiz
+        {!initialData.quiz && (
+          <Button onClick={toggleCreating} variant="ghost">
+            {isCreating ? (
+              <>Cancel</>
+            ) : (
+              <>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Add quiz
+              </>
+            )}
+          </Button>
+        )}
       </div>
       {isCreating && (
         <Form {...form}>
@@ -127,14 +113,13 @@ export const QuestionForm = ({
           >
             <FormField
               control={form.control}
-              name="prompt"
+              name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Question Title</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g. 'What is...'"
+                      placeholder="e.g. 'Web dev exam"
                       {...field}
                     />
                   </FormControl>
@@ -142,7 +127,22 @@ export const QuestionForm = ({
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      disabled={isSubmitting}
+                      placeholder="e.g. 'This will help you...'"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button disabled={!isValid || isSubmitting} type="submit">
               Create
             </Button>
@@ -153,21 +153,29 @@ export const QuestionForm = ({
         <div
           className={cn(
             "text-sm mt-2",
-            !initialData.questions.length && "text-slate-500 italic"
+            !initialData.quiz && "text-slate-500 italic"
           )}
         >
-          {!initialData.questions.length && "No questions"}
-          <QuestionList
-            onEdit={onEdit}
-            onReorder={onReorder}
-            items={initialData.questions || []}
-          />
+          {!initialData.quiz ? (
+            "No quiz"
+          ) : (
+            <div
+              className={cn(
+                "flex justify-between items-center py-3 pl-3 gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm"
+              )}
+            >
+              <p> {initialData.quiz.title}</p>
+              <div className="ml-auto pr-2 flex items-center gap-x-2">
+                {
+                  <Pencil
+                    onClick={() => onEdit(initialData.quiz?.id)}
+                    className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
+                  />
+                }
+              </div>
+            </div>
+          )}
         </div>
-      )}
-      {!isCreating && (
-        <p className="text-xs text-muted-foreground mt-4">
-          Drag and drop to reorder the questions
-        </p>
       )}
     </div>
   );

@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { examId: string; questionId: string } }
+  { params }: { params: { quizId: string; questionId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -16,10 +16,10 @@ export async function PUT(
 
     const { list } = await req.json();
 
-    const optionQuestion = await db.examQuestion.findUnique({
+    const optionQuestion = await db.quizQuestion.findUnique({
       where: {
         id: params.questionId,
-        examId: params.examId,
+        quizId: params.quizId,
       },
     });
 
@@ -28,7 +28,7 @@ export async function PUT(
     }
 
     for (let item of list) {
-      await db.examQuestionOption.update({
+      await db.quizQuestionOption.update({
         where: { id: item.id },
         data: { position: item.position },
       });
