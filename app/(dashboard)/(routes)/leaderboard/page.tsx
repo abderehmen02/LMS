@@ -118,7 +118,7 @@ const Leaderboard = async () => {
   return (
     <div className="p-6 flex flex-col">
       <div>
-        <h1 className="text-2xl font-medium">Leaderboard</h1>
+        <h1 className="text-2xl font-medium text-right">Leaderboard</h1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
         {firstThreePointsWithUserDetails.map((pointWithUser) => (

@@ -57,7 +57,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4 justify-between">
+      <div className="flex items-center py-4 justify-end">
         <Input
           placeholder="Filter by full name or first five characters of email..."
           value={

@@ -6,6 +6,9 @@ import { getProgress } from "@/actions/get-progress";
 
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
+import { Button } from "@/components/ui/button";
+import { MessageCircle } from "lucide-react";
+import { ChatWidget } from "./_components/chatbot-popup";
 
 const CourseLayout = async ({
   children,
@@ -100,6 +103,16 @@ const CourseLayout = async ({
         <CourseSidebar course={course} progressCount={progressCount} />
       </div>
       <main className="md:pr-80 pt-[80px] h-full">{children}</main>
+      <div className="fixed left-5 bottom-5 z-50">
+        <ChatWidget>
+          <Button
+            variant="outline"
+            className="bg-emerald-600 rounded-full p-4 h-14 w-14 shadow-md hover:bg-emerald-600"
+          >
+            <MessageCircle size={30} color="white" />
+          </Button>
+        </ChatWidget>
+      </div>
     </div>
   );
 };
