@@ -89,7 +89,9 @@ export async function PATCH(
       },
     });
 
-    if (!ownCourse) {
+    const studentId = values?.userId === userId;
+
+    if (!ownCourse && !studentId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

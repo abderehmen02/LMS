@@ -63,7 +63,7 @@ export const CourseSidebarItem = ({
 
   const isChapterCompleted = lessons.every((lesson) =>
     lesson.userProgress?.every(
-      (progress) => progress.userId === userId && progress.isCompleted
+      (progress) => progress.userId === userId && progress.isCompleted === true
     )
   );
 

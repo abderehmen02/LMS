@@ -1,6 +1,7 @@
 "use client";
 
 import { BarChart, Compass, Layout, List } from "lucide-react";
+import { GiPodiumWinner } from "react-icons/gi";
 import { usePathname } from "next/navigation";
 
 import { SidebarItem } from "./sidebar-item";
@@ -16,6 +17,11 @@ const guestRoutes = [
     label: "Browse",
     href: "/search",
   },
+  {
+    icon: GiPodiumWinner,
+    label: "Leaderboard",
+    href: "/leaderboard",
+  },
 ];
 
 const teacherRoutes = [
@@ -28,6 +34,11 @@ const teacherRoutes = [
     icon: Compass,
     label: "Browse",
     href: "/search",
+  },
+  {
+    icon: GiPodiumWinner,
+    label: "Leaderboard",
+    href: "/leaderboard",
   },
   // {
   //   icon: BarChart,
