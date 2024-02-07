@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function ChatWidgetTabs() {
   return (
-    <Tabs defaultValue="account" className="w-[400px]">
+    <Tabs defaultValue="chatbot" className="w-[400px]">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="chatbot">Chat Bot</TabsTrigger>
         <TabsTrigger value="chatgpt">Chat GPT</TabsTrigger>

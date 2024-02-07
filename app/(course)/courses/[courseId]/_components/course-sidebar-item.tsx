@@ -19,7 +19,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type ExamWithQuestionAndOptions = Prisma.ExamGetPayload<{
   include: {
@@ -81,9 +81,9 @@ export const CourseSidebarItem = ({
     router.push(`/courses/${courseId}/chapters/${id}/quiz/${quizId}`);
   };
 
-  const handleChapterClick = () => {
+  const handleChapterClick = useCallback(() => {
     router.push(`/courses/${courseId}/chapters/${id}`);
-  };
+  }, [courseId, id, router]);
 
   useEffect(() => {
     const ref = accordionTrigerRef.current;
@@ -100,7 +100,7 @@ export const CourseSidebarItem = ({
     return () => {
       ref?.removeEventListener("click", handleClick);
     };
-  }, []); // Empty dependency array to run the effect only once
+  }, [handleChapterClick]); // Empty dependency array to run the effect only once
 
   return (
     <>

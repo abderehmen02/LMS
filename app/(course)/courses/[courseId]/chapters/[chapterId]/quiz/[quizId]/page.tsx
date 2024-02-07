@@ -215,14 +215,16 @@ const ExamIdPage = ({
           ) : (
             <div className="w-full flex flex-col justify-center items-end h-12 pt-12 px-6">
               <div className="flex space-x-4 items-center">
-                <h1 className="text-2xl font-medium capitalize">Exam time</h1>
+                <h1 className="text-lg md:text-2xl font-medium capitalize">
+                  Exam time
+                </h1>
                 <span className="mx-4">|</span>
 
-                <h1 className="text-2xl font-medium capitalize">
+                <h1 className="text-lg md:text-2xl font-medium capitalize">
                   {quiz?.title} <span>quiz</span>
                 </h1>
                 <span className="mx-4">|</span>
-                <h1 className="text-2xl font-medium capitalize">
+                <h1 className="text-lg md:text-2xl font-medium capitalize">
                   {course?.title}
                 </h1>
               </div>
@@ -325,7 +327,7 @@ const ExamIdPage = ({
                     type="button"
                     onClick={handleSubmit}
                     className={cn(
-                      "bg-teal-500s text-white w-fit font-bold text-sm px-4 py-2 rounded-md",
+                      "bg-teal-500 text-white w-fit font-bold text-sm px-4 py-2 rounded-md",
                       (!canSubmit || isSubmitting || hasSubmitted) &&
                         "bg-slate-400 cursor-not-allowed pointer-events-none"
                     )}
