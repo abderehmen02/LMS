@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -17,7 +14,7 @@ export function ChatWidget({ children }: ChatWidgetProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="w-fit rounded-lg ml-5">
+      <PopoverContent className="w-fit rounded-xl ml-5 p-0">
         <ChatWidgetTabs />
       </PopoverContent>
     </Popover>

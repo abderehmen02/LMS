@@ -15,7 +15,7 @@ import {
 import { Preview } from "@/components/preview";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Chapter, Course, Prisma } from "@prisma/client";
 import axios from "axios";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
@@ -57,10 +57,15 @@ const ExamIdPage = ({
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false);
 
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+
   // State to store the user's selected options
   const [userSelections, setUserSelections] = useState<{
     [key: string]: number;
   }>({});
+
+  // Calculate the time per question (5 minutes)
+  const TIME_PER_QUESTION_MS = 5 * 60 * 1000;
 
   const [answeredQuestions, setAnswersQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -77,7 +82,7 @@ const ExamIdPage = ({
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!quiz) return;
 
     setIsSubmitting(true);
@@ -131,7 +136,44 @@ const ExamIdPage = ({
     } finally {
       setIsSubmitting(false);
     }
+  }, [
+    confetti,
+    params.chapterId,
+    params.courseId,
+    points,
+    quiz,
+    router,
+    userId,
+  ]);
+
+  // Fetch the quiz data and update the time remaining
+  useEffect(() => {
+    if (quiz) {
+      // Calculate the total time based on the number of questions
+      const totalTime = quiz.questions.length * TIME_PER_QUESTION_MS;
+      setTimeRemaining(totalTime);
+    }
+  }, [TIME_PER_QUESTION_MS, quiz]);
+
+  // Function to decrement the time remaining every second
+  const countdown = () => {
+    setTimeRemaining((prevTime) => Math.max(0, prevTime - 1000));
   };
+
+  useEffect(() => {
+    // Start the countdown timer when the component mounts
+    const timerId = setInterval(countdown, 1000);
+
+    // Clear the interval when the component unmounts
+    return () => clearInterval(timerId);
+  }, []);
+
+  useEffect(() => {
+    // If time is up, set isSubmitting to true
+    if (timeRemaining === 0) {
+      handleSubmit();
+    }
+  }, [handleSubmit, timeRemaining]);
 
   useEffect(() => {
     if (hasTakenQuiz && hasSubmitted) {
@@ -215,9 +257,11 @@ const ExamIdPage = ({
           ) : (
             <div className="w-full flex flex-col justify-center items-end h-12 pt-12 px-6">
               <div className="flex space-x-4 items-center">
-                <h1 className="text-lg md:text-2xl font-medium capitalize">
-                  Exam time
+                <h1 className="text-lg md:text-xl font-medium capitalize">
+                  Time Remaining: {Math.floor(timeRemaining / 60000)}:
+                  {((timeRemaining % 60000) / 1000).toFixed(0).padStart(2, "0")}
                 </h1>
+
                 <span className="mx-4">|</span>
 
                 <h1 className="text-lg md:text-2xl font-medium capitalize">
