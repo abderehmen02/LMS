@@ -97,7 +97,7 @@ export const CourseSidebar = async ({
           />
         ))}
       </div>
-      {!takingExamination && !viewingCertificate && !takingQuiz && (
+      {!takingExamination && !viewingCertificate && !takingQuiz && exam?.id && (
         <div
           className={`mt-auto border-t border-teal-600 bg-teal-100/50 ${
             !hasCertificate && "pt-4"

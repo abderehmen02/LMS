@@ -67,7 +67,7 @@ const ExamIdPage = ({
   // Calculate the time per question (5 minutes)
   const TIME_PER_QUESTION_MS = 5 * 60 * 1000;
 
-  const [answeredQuestions, setAnswersQuestions] = useState(0);
+  const [answeredQuestions, setAnsweredQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
 
@@ -125,9 +125,18 @@ const ExamIdPage = ({
         confetti.onOpen();
         return;
       }
-      toast.error("you have to take the course again", {
-        duration: 4000,
-      });
+      toast.error(
+        "Sorry, you have to take the quiz again. You did not reach the pass mark.",
+        {
+          duration: 4000,
+        }
+      );
+
+      sethasSubmitted(false);
+      setUserSelections({});
+      setWrongAnswers(0);
+      setCorrectAnswers(0);
+      setAnsweredQuestions(0);
 
       router.refresh();
     } catch (error) {
@@ -189,7 +198,9 @@ const ExamIdPage = ({
     if (hasSubmitted) return;
     const totalQuestions = quiz?.questions.length;
 
-    let numberOfCorrectAnswers = 0;
+    let correct = 0;
+    let answered = 0;
+    let wrong = 0;
 
     if (!totalQuestions) return;
 
@@ -199,24 +210,23 @@ const ExamIdPage = ({
       const correctAnswerPosition = parseInt(question.answer);
 
       if (userSelectedPosition !== undefined) {
-        setAnswersQuestions((prev) => prev + 1);
-
+        answered++;
         if (userSelectedPosition === correctAnswerPosition) {
-          setCorrectAnswers((prev) => prev + 1);
-          numberOfCorrectAnswers++;
+          correct++;
         } else {
-          setWrongAnswers((prev) => prev + 1);
+          wrong++;
         }
       }
     });
 
-    setPoints((numberOfCorrectAnswers / totalQuestions) * 100);
-  }, [quiz?.questions, userSelections, hasSubmitted]);
+    setAnsweredQuestions(answered);
+    setCorrectAnswers(correct);
+    setWrongAnswers(wrong);
+    setPoints((correct / totalQuestions) * 100);
 
-  useEffect(() => {
-    if (answeredQuestions === quiz?.questions.length)
-      setCanSubmit((current) => !current);
-  }, [answeredQuestions, quiz?.questions.length]);
+    // Enable submission when all questions are answered
+    setCanSubmit(answered === totalQuestions);
+  }, [userSelections, hasSubmitted, quiz?.questions]);
 
   useEffect(() => {
     async function fetchData() {
@@ -278,6 +288,9 @@ const ExamIdPage = ({
                 </h1>
               </div>
               <div className="flex space-x-3 ">
+                <p className="text-md">
+                  {canSubmit} Answered Questions {answeredQuestions}
+                </p>
                 <p className="text-md">{quiz?.description}</p>
                 <p className="text-md">
                   Total questions {quiz?.questions.length}
@@ -332,7 +345,10 @@ const ExamIdPage = ({
                                     name={question.id}
                                     value={index + 1}
                                     onChange={() =>
-                                      handleOptionChange(question.id, index + 1)
+                                      handleOptionChange(
+                                        question.id,
+                                        question.position
+                                      )
                                     }
                                   />
                                 </div>
