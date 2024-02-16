@@ -91,9 +91,15 @@ const CourseLayout = async ({
 
   let progressCount = await getProgress(userId, course.id);
 
-  if (exam?.beforeScore && exam?.beforeScore >= 50 && progressCount < 100) {
+  const totalExamScore =
+    exam?.afterScore && exam.beforeScore
+      ? (exam?.beforeScore + exam?.afterScore) / 2
+      : null;
+
+  if (totalExamScore && totalExamScore >= 50 && progressCount < 100) {
     progressCount = Math.min(progressCount + 10, 100);
   }
+
   return (
     <div className="h-full">
       <div className="h-[80px] md:pr-80 fixed inset-y-0 w-full z-50">

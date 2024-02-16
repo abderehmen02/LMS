@@ -18,14 +18,18 @@ interface Message {
   isUserMessage: boolean;
 }
 
-const ChatGPTChat = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+const ChatGPTTab = () => {
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Load messages from localStorage on initial render
+    const storedMessages = localStorage.getItem("chatMessages");
+    return storedMessages ? JSON.parse(storedMessages) : [];
+  });
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
+    // Save messages to localStorage whenever messages change
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
     scrollToBottom();
   }, [messages]);
 
@@ -54,8 +58,6 @@ const ChatGPTChat = () => {
     ]);
 
     try {
-      setIsLoading(true);
-
       // Construct queryMessages from the last 10 messages
       const queryMessages = messages
         .slice(-10) // Take the last 10 messages
@@ -97,33 +99,31 @@ const ChatGPTChat = () => {
       ]);
     } catch (error) {
       console.error("Error fetching ChatGPT response:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <Card className="shadow-none border-none p-0">
-      <CardContent className="space-y-2 pt-10 h-[300px] max-h-[300px] overflow-y-auto">
-        <div className="space-y-2">
+      <CardContent className="space-y-2 mt-3.5 pt-9 h-[300px] max-h-[300px] overflow-y-auto">
+        <div className="space-y-4">
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex text-gray-700 text-sm ${
+              className={`flex text-white text-sm ${
                 msg.isUserMessage ? "justify-end" : "justify-start"
               }`}
             >
               {msg.isUserMessage ? (
-                <div className="bg-emerald-200 rounded-xl rounded-br-none w-fir max-w-sm px-3 py-2">
+                <div className="bg-emerald-500 rounded-xl rounded-br-none w-fit max-w-xs px-3 py-2">
                   {msg.text}
-                </div>
-              ) : msg.text === "" ? ( // Conditionally render loading indicator for the last user message
-                <div className="w-fit flex space-x-1">
-                  <FaSpinner className="text-lg animate-spin" />
                 </div>
               ) : (
-                <div className="bg-sky-200 rounded-xl rounded-bl-none w-fit max-w-sm px-3 py-2 whitespace-pre-wrap">
-                  {msg.text}
+                <div className="bg-sky-500 rounded-xl rounded-bl-none w-fit max-w-xs px-3 py-2 whitespace-pre-wrap">
+                  {msg.text === "" ? (
+                    <FaSpinner className="text-lg animate-spin" />
+                  ) : (
+                    msg.text
+                  )}
                 </div>
               )}
             </div>
@@ -134,7 +134,7 @@ const ChatGPTChat = () => {
       <CardFooter>
         <Input
           type="text"
-          className="w-full border-none focus-visible:ring-0 bg-slate-100"
+          className="w-full border-none focus-visible:ring-0 bg-slate-100 mt-5"
           placeholder="Type your message..."
           value={inputValue}
           multiple
@@ -146,4 +146,4 @@ const ChatGPTChat = () => {
   );
 };
 
-export default ChatGPTChat;
+export default ChatGPTTab;

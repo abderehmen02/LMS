@@ -18,7 +18,6 @@ export async function GET(
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
-        userId: userId,
       },
       include: {
         chapters: true,
@@ -42,12 +41,12 @@ export async function GET(
     });
 
     if (!course) {
-      return new NextResponse("Not found", { status: 404 });
+      return new NextResponse("Course Not found", { status: 404 });
     }
 
     return NextResponse.json(course);
   } catch (error) {
-    console.log("[COURSE_ID_DELETE]", error);
+    console.log("[COURSE_ID_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

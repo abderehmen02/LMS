@@ -61,16 +61,6 @@ export const ExamForm = ({ initialData, courseId }: ExamFormProps) => {
       );
       toast.success("Exam created");
 
-      const certificateResponse = await axios.post(
-        `/api/courses/${courseId}/exam/${response.data.id}/certificate`
-      );
-
-      if (certificateResponse.status === 200) {
-        toast.success("A certificate was also created for this course!");
-      } else {
-        //TODO: handle certificate creation error
-      }
-
       toggleCreating();
 
       router.refresh();

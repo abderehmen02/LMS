@@ -75,6 +75,9 @@ const ExamIdPage = ({
 
   const hasTakenQuiz = quiz && quiz.userId !== "nil";
 
+  // Check if userSelections has any members
+  const hasUserSelections = Object.keys(userSelections).length > 0;
+
   const handleOptionChange = (questionId: string, optionPosition: number) => {
     setUserSelections((prevSelections) => ({
       ...prevSelections,
@@ -83,7 +86,7 @@ const ExamIdPage = ({
   };
 
   const handleSubmit = useCallback(async () => {
-    if (!quiz) return;
+    if (!quiz || !hasUserSelections) return;
 
     setIsSubmitting(true);
 
@@ -138,6 +141,7 @@ const ExamIdPage = ({
     }
   }, [
     confetti,
+    hasUserSelections,
     params.chapterId,
     params.courseId,
     points,
@@ -213,6 +217,7 @@ const ExamIdPage = ({
     if (answeredQuestions === quiz?.questions.length)
       setCanSubmit((current) => !current);
   }, [answeredQuestions, quiz?.questions.length]);
+
   useEffect(() => {
     async function fetchData() {
       try {

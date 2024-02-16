@@ -93,11 +93,6 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    console.log("====================================");
-    console.log(params.examId);
-    console.log(params.certificateId);
-    console.log("====================================");
-
     const certificate = await db.certificate.update({
       where: {
         id: params.certificateId,
