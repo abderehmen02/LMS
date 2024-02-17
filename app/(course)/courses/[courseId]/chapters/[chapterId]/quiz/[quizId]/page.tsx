@@ -71,7 +71,7 @@ const ExamIdPage = ({
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
 
-  const [points, setPoints] = useState<number>();
+  const [points, setPoints] = useState<number>(0);
 
   const hasTakenQuiz = quiz && quiz.userId !== "nil";
 
@@ -123,20 +123,20 @@ const ExamIdPage = ({
         });
 
         confetti.onOpen();
-        return;
-      }
-      toast.error(
-        "Sorry, you have to take the quiz again. You did not reach the pass mark.",
-        {
-          duration: 4000,
-        }
-      );
+      } else {
+        sethasSubmitted(false);
+        setUserSelections({});
+        setWrongAnswers(0);
+        setCorrectAnswers(0);
+        setAnsweredQuestions(0);
 
-      sethasSubmitted(false);
-      setUserSelections({});
-      setWrongAnswers(0);
-      setCorrectAnswers(0);
-      setAnsweredQuestions(0);
+        toast.error(
+          "Sorry, you have to take the quiz again. You did not reach the pass mark.",
+          {
+            duration: 4000,
+          }
+        );
+      }
 
       router.refresh();
     } catch (error) {
@@ -378,7 +378,7 @@ const ExamIdPage = ({
                 <p className="">Are you confident that you are done?</p>
               )}
               <div className="flex flex-row space-x-4 items-center">
-                {hasSubmitted ? (
+                {points > 50 && hasSubmitted ? (
                   <Link
                     href={`/courses/${params.courseId}/chapters/${params.chapterId}`}
                     className={cn(
