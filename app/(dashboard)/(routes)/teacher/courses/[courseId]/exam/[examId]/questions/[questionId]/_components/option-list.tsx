@@ -71,12 +71,12 @@ export const OptionList = ({
 
   const router = useRouter();
 
-  const onDelete = async () => {
+  const onDelete = async (id: string) => {
     try {
       setIsDeleting(true);
 
       await axios.delete(
-        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/options/${currentOption?.id}`
+        `/api/courses/${courseId}/exam/${examId}/questions/${questionId}/options/${id}`
       );
 
       toast.success("Option deleted");
@@ -171,8 +171,8 @@ export const OptionList = ({
                       <div className="ml-auto pr-2 flex items-center gap-x-2">
                         <Delete
                           onClick={() => {
-                            setCurrentOption((prev) => option);
-                            onDelete();
+                            setCurrentOption(option);
+                            onDelete(option.id);
                           }}
                           className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
                         />
