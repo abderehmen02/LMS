@@ -25,6 +25,7 @@ import { Preview } from "@/components/preview";
 interface QuizDescriptionFormProps {
   initialData: Quiz;
   chapterId: string;
+  courseId: string;
   quizId: string;
 }
 
@@ -35,6 +36,7 @@ const formSchema = z.object({
 export const QuizDescriptionForm = ({
   initialData,
   chapterId,
+  courseId,
   quizId,
 }: QuizDescriptionFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -54,7 +56,10 @@ export const QuizDescriptionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${chapterId}/quiz/${quizId}`, values);
+      await axios.patch(
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}`,
+        values
+      );
       toast.success("Quiz updated");
       toggleEdit();
       router.refresh();

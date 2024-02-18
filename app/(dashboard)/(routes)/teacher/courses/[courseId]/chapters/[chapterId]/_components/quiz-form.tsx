@@ -166,6 +166,14 @@ export const QuizForm = ({
             >
               <p> {initialData.quiz.title}</p>
               <div className="ml-auto pr-2 flex items-center gap-x-2">
+                <Badge
+                  className={cn(
+                    "bg-slate-500",
+                    initialData.isPublished && "bg-sky-700"
+                  )}
+                >
+                  {initialData.isPublished ? "Published" : "Draft"}
+                </Badge>
                 {
                   <Pencil
                     onClick={() => onEdit(initialData.quiz?.id)}

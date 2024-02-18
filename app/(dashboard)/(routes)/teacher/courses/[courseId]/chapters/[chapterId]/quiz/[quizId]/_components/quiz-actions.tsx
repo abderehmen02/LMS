@@ -57,7 +57,7 @@ export const QuizActions = ({
 
       await axios.delete(`/api/courses/${chapterId}/quiz/${quizId}`);
 
-      toast.success("Chapter deleted");
+      toast.success("Quiz deleted");
       router.refresh();
       router.push(`/teacher/courses/${chapterId}`);
     } catch {

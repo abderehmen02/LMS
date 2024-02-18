@@ -34,6 +34,8 @@ export const LessonsList = ({ items, onReorder, onEdit }: LessonsListProps) => {
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
+    console.log("RESULT", result);
+
     const items = Array.from(lessons);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
@@ -41,14 +43,16 @@ export const LessonsList = ({ items, onReorder, onEdit }: LessonsListProps) => {
     const startIndex = Math.min(result.source.index, result.destination.index);
     const endIndex = Math.max(result.source.index, result.destination.index);
 
-    const updatedChapters = items.slice(startIndex, endIndex + 1);
+    const updatedLessons = items.slice(startIndex, endIndex + 1);
 
     setLessons(items);
 
-    const bulkUpdateData = updatedChapters.map((chapter) => ({
-      id: chapter.id,
-      position: items.findIndex((item) => item.id === chapter.id),
+    const bulkUpdateData = updatedLessons.map((lesson) => ({
+      id: lesson.id,
+      position: items.findIndex((item) => item.id === lesson.id),
     }));
+
+    console.log("LESSONS_REORDER", bulkUpdateData);
 
     onReorder(bulkUpdateData);
   };
@@ -59,7 +63,7 @@ export const LessonsList = ({ items, onReorder, onEdit }: LessonsListProps) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="chapters">
+      <Droppable droppableId="lessons">
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {lessons.map((lesson, index) => (

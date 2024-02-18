@@ -50,7 +50,7 @@ const QuestinoIdPage = async ({
   const requiredFields = [
     question.prompt,
     question.explanation,
-    question.options.length >= 3 && question.options.length <= 4,
+    question.options.length >= 2 && question.options.length <= 4,
   ];
 
   const totalFields = requiredFields.length;
@@ -116,6 +116,7 @@ const QuestinoIdPage = async ({
                 quizId={params.quizId}
                 chapterId={params.chapterId}
                 questionId={params.questionId}
+                optionLength={question.options.length}
               />
               <QuestionExplanationForm
                 initialData={question}

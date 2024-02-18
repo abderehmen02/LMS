@@ -96,11 +96,13 @@ const QuizIdPage = async ({
               <QuizTitleForm
                 initialData={quiz}
                 chapterId={params.chapterId}
+                courseId={params.courseId}
                 quizId={params.quizId}
               />
               <QuizDescriptionForm
                 initialData={quiz}
                 chapterId={params.chapterId}
+                courseId={params.courseId}
                 quizId={params.quizId}
               />
             </div>

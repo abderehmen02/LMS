@@ -38,6 +38,8 @@ export const QuestionList = ({
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
+    console.log("RESULT", result);
+
     const items = Array.from(questions);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
@@ -49,10 +51,12 @@ export const QuestionList = ({
 
     setQuestions(items);
 
-    const bulkUpdateData = updatedQuestions.map((question) => ({
-      id: question.id,
-      position: items.findIndex((item) => item.id === question.id),
+    const bulkUpdateData = updatedQuestions.map((questions) => ({
+      id: questions.id,
+      position: items.findIndex((item) => item.id === questions.id),
     }));
+
+    console.log("QUESTIONS_REORDER", bulkUpdateData);
 
     onReorder(bulkUpdateData);
   };
@@ -63,7 +67,7 @@ export const QuestionList = ({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="quiz">
+      <Droppable droppableId="questions">
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {questions.map((question, index) => (

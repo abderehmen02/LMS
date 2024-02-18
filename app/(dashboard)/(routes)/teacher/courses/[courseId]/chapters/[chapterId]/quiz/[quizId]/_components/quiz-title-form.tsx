@@ -24,6 +24,7 @@ interface QuizTitleFormProps {
     title: string;
   };
   chapterId: string;
+  courseId: string;
   quizId: string;
 }
 
@@ -34,6 +35,7 @@ const formSchema = z.object({
 export const QuizTitleForm = ({
   initialData,
   chapterId,
+  courseId,
   quizId,
 }: QuizTitleFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -51,8 +53,11 @@ export const QuizTitleForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${chapterId}/exam/${quizId}`, values);
-      toast.success("Exam updated");
+      await axios.patch(
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}`,
+        values
+      );
+      toast.success("Quiz updated");
       toggleEdit();
       router.refresh();
     } catch {

@@ -68,6 +68,7 @@ export const QuestionForm = ({
       );
       toast.success("Question created");
       toggleCreating();
+      form.setValue("prompt", "");
       router.refresh();
     } catch {
       toast.error("Something went wrong");
@@ -79,7 +80,7 @@ export const QuestionForm = ({
       setIsUpdating(true);
 
       await axios.put(
-        `/api/courses/${courseId}/chapters${chapterId}/quiz/${quizId}/questions/reorder`,
+        `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/reorder`,
         {
           list: updateData,
         }

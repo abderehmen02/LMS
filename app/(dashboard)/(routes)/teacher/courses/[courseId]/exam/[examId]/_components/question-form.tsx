@@ -66,6 +66,7 @@ export const QuestionForm = ({
       );
       toast.success("Question created");
       toggleCreating();
+      form.setValue("prompt", "");
       router.refresh();
     } catch {
       toast.error("Something went wrong");

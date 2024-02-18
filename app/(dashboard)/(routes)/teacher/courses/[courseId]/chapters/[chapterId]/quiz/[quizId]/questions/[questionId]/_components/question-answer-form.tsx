@@ -23,6 +23,7 @@ interface QuestionAnswerFormProps {
   initialData: {
     answer: string;
   };
+  optionLength: number;
   courseId: string;
   quizId: string;
   chapterId: string;
@@ -36,6 +37,7 @@ const formSchema = z.object({
 export const QuestionAnswerForm = ({
   initialData,
   courseId,
+  optionLength,
   quizId,
   chapterId,
   questionId,
@@ -110,7 +112,7 @@ export const QuestionAnswerForm = ({
                     <Input
                       type="number"
                       min={1}
-                      max={4}
+                      max={optionLength}
                       disabled={isSubmitting}
                       {...field}
                     />

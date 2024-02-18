@@ -61,11 +61,11 @@ export const QuestionActions = ({
         `/api/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}/questions/${questionId}`
       );
 
-      toast.success("Lesson deleted");
-      router.refresh();
+      toast.success("Question deleted");
       router.push(
         `/teacher/courses/${courseId}/chapters/${chapterId}/quiz/${quizId}`
       );
+      router.refresh();
     } catch {
       toast.error("Something went wrong");
     } finally {

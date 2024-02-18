@@ -74,6 +74,8 @@ export const OptionForm = ({
       );
       toast.success("Question option created");
       toggleCreating();
+      form.setValue("text", "");
+
       router.refresh();
     } catch (error: any) {
       console.log("====================================");
@@ -117,7 +119,7 @@ export const OptionForm = ({
       <div className="font-medium flex items-center justify-between">
         <div>
           <p> Question Options</p>
-          <p className="text-xs font-semibold">Minimum of 3, maximum of 4</p>
+          <p className="text-xs font-semibold">Minimum of 2, maximum of 4</p>
         </div>
         <Button onClick={toggleCreating} variant="ghost">
           {isCreating ? (
