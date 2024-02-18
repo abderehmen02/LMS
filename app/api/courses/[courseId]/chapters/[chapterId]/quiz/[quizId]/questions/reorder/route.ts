@@ -5,7 +5,9 @@ import { db } from "@/lib/db";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { courseId: string; examId: string } }
+  {
+    params,
+  }: { params: { courseId: string; chapterId: string; quizId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -16,14 +18,14 @@ export async function PUT(
 
     const { list } = await req.json();
 
-    const questionExam = await db.exam.findUnique({
+    const questionQuiz = await db.quiz.findUnique({
       where: {
-        id: params.examId,
-        courseId: params.courseId,
+        id: params.quizId,
+        chapterId: params.chapterId,
       },
     });
 
-    if (!questionExam) {
+    if (!questionQuiz) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
