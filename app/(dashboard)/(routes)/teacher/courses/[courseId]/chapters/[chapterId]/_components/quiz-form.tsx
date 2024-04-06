@@ -41,7 +41,6 @@ export const QuizForm = ({
 }: QuizFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-
   const toggleCreating = () => {
     setIsCreating((current) => !current);
   };
@@ -169,10 +168,10 @@ export const QuizForm = ({
                 <Badge
                   className={cn(
                     "bg-slate-500",
-                    initialData.isPublished && "bg-sky-700"
+                    initialData.quiz.isPublished && "bg-sky-700"
                   )}
                 >
-                  {initialData.isPublished ? "Published" : "Draft"}
+                  {initialData.quiz.isPublished ? "Published" : "Draft"}
                 </Badge>
                 {
                   <Pencil
