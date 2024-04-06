@@ -30,6 +30,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@react-pdf/renderer": "^3.3.4",
     "@tanstack/react-table": "^8.9.11",
+    "@tanstack/table-core": "^8.15.3",
     "@types/node": "20.6.0",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",

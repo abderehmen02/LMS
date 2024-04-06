@@ -13,7 +13,7 @@ const TeacherLayout = ({
     return redirect("/");
   }
 
-  return <>{children}</>
+  return <div  >{children}</div>
 }
  
 export default TeacherLayout;

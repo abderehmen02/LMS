@@ -34,11 +34,11 @@ export const getProgress = async (
     const publishedLessonIds = publishedChapters.flatMap((chapter) =>
       chapter.lessons.map((lesson) => lesson.id)
     );
-
+    console.log("publiched lessons id" , publishedLessonIds)
     const publishedQuizIds = publishedChapters.flatMap(
       (chapter) => chapter.quiz?.userId !== "nil"
     );
-
+    console.log("quizes" , publishedQuizIds)
     const validCompletedLessons = await db.userProgress.count({
       where: {
         userId: userId,
@@ -61,7 +61,7 @@ export const getProgress = async (
         },
       },
     });
-
+   
     const totalItems = publishedLessonIds.length + publishedQuizIds.length;
     const completedItems = validCompletedLessons + validCompletedQuizes;
 

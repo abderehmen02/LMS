@@ -33,7 +33,7 @@ const teacherRoutes = [
   {
     icon: Compass,
     label: "Browse",
-    href: "/search",
+    href: "/teacher/search",
   },
   {
     icon: GiPodiumWinner,
