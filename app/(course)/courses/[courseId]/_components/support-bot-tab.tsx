@@ -17,10 +17,10 @@ interface Message {
   isUserMessage: boolean;
 }
 
-const ChatGPTTab = () => {
+const SupportBotTab = () => {
   const [messages, setMessages] = useState<Message[]>(() => {
     // Load messages from localStorage on initial render
-    const storedMessages = localStorage.getItem("chatMessages");
+    const storedMessages = localStorage.getItem("support-bot-messages");
     return storedMessages ? JSON.parse(storedMessages) : [];
   });
   const [inputValue, setInputValue] = useState("");
@@ -28,7 +28,7 @@ const ChatGPTTab = () => {
 
   useEffect(() => {
     // Save messages to localStorage whenever messages change
-    localStorage.setItem("chatMessages", JSON.stringify(messages));
+    localStorage.setItem("support-bot-messages", JSON.stringify(messages));
     scrollToBottom();
   }, [messages]);
 
@@ -145,4 +145,4 @@ const ChatGPTTab = () => {
   );
 };
 
-export default ChatGPTTab;
+export default SupportBotTab;
