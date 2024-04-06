@@ -80,7 +80,7 @@ const SupportBotTab = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_CHATGPY_API_KEY}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPPORT_CHAT_API_KEY}`,
           },
         }
       );
