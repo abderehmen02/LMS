@@ -15,6 +15,7 @@ import { BotIcon, Headphones } from "lucide-react";
 import SupportBotTab from "./support-bot-tab";
 
 export function ChatWidgetTabs() {
+
   return (
     <Tabs defaultValue="chatbot" className="w-[400px]">
       <TabsList className="grid w-full grid-cols-2 p-0 bg-white">

@@ -1,3 +1,4 @@
+"use client"
 import {
   Popover,
   PopoverContent,
@@ -5,12 +6,15 @@ import {
 } from "@/components/ui/popover";
 import React from "react";
 import { ChatWidgetTabs } from "./chat-tabs";
+import { usePathname } from "next/navigation";
 
 interface ChatWidgetProps {
   children: React.ReactNode;
 }
 
 export function ChatWidget({ children }: ChatWidgetProps) {
+  const pathname = usePathname()
+  if(pathname.includes("exam")) return null
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
