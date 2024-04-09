@@ -345,7 +345,7 @@ const ExamIdPage = ({
                                     onChange={() =>
                                       handleOptionChange(
                                         question.id,
-                                        question.position
+                                        option.position
                                       )
                                     }
                                   />
