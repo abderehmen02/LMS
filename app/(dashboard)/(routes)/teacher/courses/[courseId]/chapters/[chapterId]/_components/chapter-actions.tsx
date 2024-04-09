@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -24,6 +24,13 @@ export const ChapterActions = ({
 }: ChapterActionsProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setisClient] = useState(false)
+
+
+
+useEffect(()=>{
+  setisClient(true)
+})
 
   const onClick = async () => {
     try {
@@ -45,6 +52,7 @@ export const ChapterActions = ({
     }
   }
   
+
   const onDelete = async () => {
     try {
       setIsLoading(true);
@@ -53,7 +61,7 @@ export const ChapterActions = ({
 
       toast.success("Chapter deleted");
       router.refresh();
-      router.push(`/teacher/courses/${courseId}`);
+      isClient && window.location.replace(`/teacher/courses/${courseId}`)
     } catch {
       toast.error("Something went wrong");
     } finally {
