@@ -73,7 +73,7 @@ const CertificatePage = ({
       // Handle download failure gracefully
     }
   };
-
+console.log("certificate" , certificate)
   return (
     <>
       {isGettingCertificate ? (
@@ -126,7 +126,7 @@ const CertificatePage = ({
                   completed on the{" "}
                   <span className="font-semibold">
                     {" "}
-                    {certificate?.dateOfIssuance.toLocaleString().split("T")[0]}
+                    {certificate?.dateOfIssuance?.toLocaleString()?.split("T")[0]}
                   </span>
                 </p>
               </div>

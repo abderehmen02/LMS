@@ -16,23 +16,14 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const examData = await db.exam.findFirst({
+    const certificate = await db.certificate.findUnique({
       where: {
-       certificate : {
-        some : {
           id : params.certificateId  , 
           userId : userId ,
-        }
        } , 
     
-      },
-      include : {
-        certificate : true
-      }
     });
 
-    const certificate = examData?.certificate
-    console.log("id" , params.certificateId , userId , certificate )
     if (!certificate) {
       return new NextResponse("Not found", { status: 404 });
     }
