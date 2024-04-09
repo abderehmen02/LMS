@@ -7,9 +7,10 @@ import {
   Circle,
   Plus,
   PlusSquareIcon,
+  Trash   
 } from "lucide-react";
 
-import { FaSpinner } from "react-icons/fa";
+import { FaSpinner  } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,21 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
     }
   };
 
+
+
+  const handleDeleteCategory = async (id: string ) => {
+    setLoading(true);
+    try {
+      await axios.delete(`/api/categories/${id}`);
+      toast.success("Category deleted successfully");
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -92,7 +108,7 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
                     value === option.value ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {option.label}
+            <div className="w-full flex justify-between z-40" onClick={(e)=>{ e.stopPropagation(); handleDeleteCategory(option.value) }} >   <span className="inline-block" >{option.label}</span> <Trash className="flex text-xs cursor-pointer"  /></div>
               </CommandItem>
             ))}
           </CommandGroup>
