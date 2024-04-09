@@ -17,7 +17,6 @@ export default async function Dashboard() {
   const { completedCourses, coursesInProgress } = await getDashboardCourses(
     userId
   );
-  console.log( "courses" , completedCourses ,  coursesInProgress)
   return (
     <div className="p-6 space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

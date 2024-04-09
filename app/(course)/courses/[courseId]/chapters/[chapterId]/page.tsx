@@ -36,7 +36,7 @@ const ChapterIdPage = async ({
       },
     },
   });
-
+  console.log("chapter" , chapter)
   if (!chapter) {
     return redirect("/");
   }

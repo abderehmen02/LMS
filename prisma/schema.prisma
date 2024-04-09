@@ -151,6 +151,7 @@ model Exam {
   certificate  Certificate[]
   passingScore Int?           @default(70)
   beforeScore  Float?         @default(0)
+  isBeforeScoreToken Boolean  @default(false)
   afterScore   Float?         @default(0)
   isPublished  Boolean        @default(false)
   createdAt    DateTime       @default(now())

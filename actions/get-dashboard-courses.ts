@@ -18,6 +18,7 @@ export const getDashboardCourses = async (
   userId: string
 ): Promise<DashboardCourses> => {
   try {
+
     const courses = await db.course.findMany({
       where: {
         userId: userId,

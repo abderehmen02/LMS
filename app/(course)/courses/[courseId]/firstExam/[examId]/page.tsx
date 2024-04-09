@@ -1,9 +1,19 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Preview } from "@/components/preview";
+import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
+import { useCallback, useEffect, useState } from "react";
+import { Prisma, Certificate, Course } from "@prisma/client";
+import axios from "axios";
+import { useConfettiStore } from "@/hooks/use-confetti-store";
+import { getProgress } from "@/actions/get-progress";
+import { Banner } from "@/components/banner";
+import { PrepareCertificateModal } from "@/components/modals/exam-certificate-modal";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
@@ -12,17 +22,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-import { Preview } from "@/components/preview";
-import { cn } from "@/lib/utils";
-import toast from "react-hot-toast";
-import { useCallback, useEffect, useState } from "react";
-import { Chapter, Course, Prisma } from "@prisma/client";
-import axios from "axios";
-import { useConfettiStore } from "@/hooks/use-confetti-store";
-import { Banner } from "@/components/banner";
-import Link from "next/link";
-
-type QuizWithQuestionsAndOptions = Prisma.QuizGetPayload<{
+type ExamWithQuestionsAndOptions = Prisma.ExamGetPayload<{
   include: {
     certificate: true;
     questions: {
@@ -39,17 +39,19 @@ type QuizWithQuestionsAndOptions = Prisma.QuizGetPayload<{
 const ExamIdPage = ({
   params,
 }: {
-  params: { courseId: string; examId: string; chapterId: string };
+  params: { courseId: string; examId: string };
 }) => {
   const { userId } = useAuth();
 
-  const router = useRouter();
-
   const confetti = useConfettiStore();
+
+  const [exam, setExam] = useState<ExamWithQuestionsAndOptions | null>();
 
   const [course, setCourse] = useState<Course | null>();
 
-  const [quiz, setQuiz] = useState<QuizWithQuestionsAndOptions | null>();
+  const [certificateId, setCertificateId] = useState("");
+
+  const [progressCount, setProgressCount] = useState<number>();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -67,15 +69,14 @@ const ExamIdPage = ({
   // Calculate the time per question (5 minutes)
   const TIME_PER_QUESTION_MS = 5 * 60 * 1000;
 
-  const [answeredQuestions, setAnsweredQuestions] = useState(0);
+  const [answeredQuestions, setAnswersQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [scorePercentage, setScorePercentage] = useState(0);
 
-  const [points, setPoints] = useState<number>(0);
+  const hasTakenTheExamBefore =
+    exam && exam.userId !== "nil" && exam.beforeScore;
 
-  const hasTakenQuiz = quiz && quiz.userId !== "nil";
-
-  // Check if userSelections has any members
   const hasUserSelections = Object.keys(userSelections).length > 0;
 
   const handleOptionChange = (questionId: string, optionPosition: number) => {
@@ -86,59 +87,44 @@ const ExamIdPage = ({
   };
 
   const handleSubmit = useCallback(async () => {
-    if (!quiz || !hasUserSelections) return;
+    if (!exam || !hasUserSelections || hasSubmitted) return;
 
     setIsSubmitting(true);
 
     try {
+      const fieldToUpdate = hasTakenTheExamBefore
+        ? "afterScore"
+        : "beforeScore";
+
       const response = await axios.patch(
-        `/api/courses/${params.courseId}/chapters/${params.chapterId}/quiz/${quiz.id}`,
+        `/api/courses/${params.courseId}/exam/${exam.id}`,
         {
+          [fieldToUpdate]: scorePercentage,
           userId: userId,
         }
       );
 
-      toast.success("Quiz Submitted Successfully.", { duration: 4000 });
+      sethasSubmitted(true);
 
-      console.log("====================================");
-      console.log(response);
-      console.log("====================================");
+      toast.success("Exam Submitted Successfully.", { duration: 4000 });
 
-      if (points != undefined && points > 50) {
-        const quizResponse = await axios.put(
-          `/api/courses/${params.courseId}/chapters/${params.chapterId}/quiz/${quiz.id}/progress`,
-          {
-            points,
-          }
+      if (scorePercentage > 50) {
+        const certificateResponse = await axios.post(
+          `/api/courses/${params.courseId}/exam/${response.data.id}/certificate`
         );
 
-        console.log("====================================");
-        console.log(quizResponse);
-        console.log("====================================");
-
-        sethasSubmitted(true);
-
-        toast.success("congratulations for passing the quiz", {
-          duration: 4000,
-        });
-
-        confetti.onOpen();
-      } else {
-        sethasSubmitted(false);
-        setUserSelections({});
-        setWrongAnswers(0);
-        setCorrectAnswers(0);
-        setAnsweredQuestions(0);
-
-        toast.error(
-          "Sorry, you have to take the quiz again. You did not reach the pass mark.",
-          {
-            duration: 4000,
-          }
-        );
+        if (certificateResponse.status === 200) {
+          toast.success("Your certificate is ready!");
+          setCertificateId(certificateResponse.data.id);
+          confetti.onOpen();
+        } else {
+          toast.error("Cannot create certificate at this time, sorry!");
+        }
       }
 
-      router.refresh();
+      console.log("====================================");
+      console.log(response.data);
+      console.log("====================================");
     } catch (error) {
       console.log("====================================");
       console.log(error);
@@ -150,27 +136,30 @@ const ExamIdPage = ({
     }
   }, [
     confetti,
+    exam,
     hasUserSelections,
-    params.chapterId,
+    hasSubmitted,
+    hasTakenTheExamBefore,
     params.courseId,
-    points,
-    quiz,
-    router,
+    scorePercentage,
     userId,
   ]);
 
-  // Fetch the quiz data and update the time remaining
+  // Get the exam data and update the time remaining
   useEffect(() => {
-    if (quiz) {
-      // Calculate the total time based on the number of questions
-      const totalTime = quiz.questions.length * TIME_PER_QUESTION_MS;
+    // Calculate the total time based on the number of questions
+    if (exam) {
+      const totalTime = exam.questions.length * TIME_PER_QUESTION_MS;
       setTimeRemaining(totalTime);
     }
-  }, [TIME_PER_QUESTION_MS, quiz]);
+  }, [TIME_PER_QUESTION_MS, exam]);
 
   // Function to decrement the time remaining every second
   const countdown = () => {
-    setTimeRemaining((prevTime) => Math.max(0, prevTime - 1000));
+    setTimeRemaining((prevTime) => {
+      const newTime = Math.max(0, prevTime - 1000);
+      return newTime;
+    });
   };
 
   useEffect(() => {
@@ -183,20 +172,23 @@ const ExamIdPage = ({
 
   useEffect(() => {
     // If time is up, set isSubmitting to true
-    if (timeRemaining === 0) {
+    if (timeRemaining === 0 && !hasSubmitted) {
       handleSubmit();
     }
-  }, [handleSubmit, timeRemaining]);
+  }, [handleSubmit, hasSubmitted, timeRemaining]);
 
-  useEffect(() => {
-    if (hasTakenQuiz && hasSubmitted) {
-      sethasSubmitted(true);
-    }
-  }, [hasSubmitted, hasTakenQuiz]);
+  // useEffect(() => {
+  //   if (
+  //     (hasTakenTheExamBefore && exam.afterScore && exam.afterScore > 50) ||
+  //     (hasSubmitted && hasTakenTheExamBefore)
+  //   ) {
+  //     sethasSubmitted(true);
+  //   }
+  // }, [exam?.afterScore, hasSubmitted, hasTakenTheExamBefore, params.courseId]);
 
   useEffect(() => {
     if (hasSubmitted) return;
-    const totalQuestions = quiz?.questions.length;
+    const totalQuestions = exam?.questions.length;
 
     let correct = 0;
     let answered = 0;
@@ -204,10 +196,11 @@ const ExamIdPage = ({
 
     if (!totalQuestions) return;
 
-    quiz?.questions.forEach((question) => {
+    exam?.questions.forEach((question) => {
       const questionId = question.id;
       const userSelectedPosition = userSelections[questionId];
       const correctAnswerPosition = parseInt(question.answer);
+
       if (userSelectedPosition !== undefined) {
         answered++;
         if (userSelectedPosition === correctAnswerPosition) {
@@ -218,31 +211,35 @@ const ExamIdPage = ({
       }
     });
 
-    setAnsweredQuestions(answered);
+    setAnswersQuestions(answered);
     setCorrectAnswers(correct);
     setWrongAnswers(wrong);
-    setPoints((correct / totalQuestions) * 100);
+    setScorePercentage((correct / totalQuestions) * 100);
 
     // Enable submission when all questions are answered
     setCanSubmit(answered === totalQuestions);
-  }, [userSelections, hasSubmitted, quiz?.questions]);
+  }, [exam?.questions, userSelections, hasSubmitted]);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [chapterResponse, courseResponse] = await Promise.all([
-          axios.get(
-            `/api/courses/${params.courseId}/chapters/${params.chapterId}`
-          ),
-          axios.get(`/api/courses/${params.courseId}`),
-        ]);
+    if (answeredQuestions === exam?.questions.length)
+      setCanSubmit((current) => !current);
+  }, [answeredQuestions, exam?.questions.length]);
 
-        setQuiz(chapterResponse.data.quiz);
-        setCourse(courseResponse.data);
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axios.get(`/api/courses/${params.courseId}`);
+
+        setExam(response.data.exams);
 
         console.log("====================================");
-        console.log(chapterResponse.data);
-        console.log(courseResponse.data);
+        console.log(response.data);
+        console.log("====================================");
+
+        setCourse(response.data);
+
+        console.log("====================================");
+        console.log(response.data.exams.certificate);
         console.log("====================================");
       } catch (error) {
         console.log("====================================");
@@ -250,10 +247,15 @@ const ExamIdPage = ({
         console.log("====================================");
         toast.error("Something went wrong");
       }
-    }
+    })();
 
-    fetchData();
-  }, [params.chapterId, params.courseId, userId]);
+    (async () => {
+      if (!userId) return;
+
+      const progressCount = await getProgress(userId, params.courseId);
+      setProgressCount(progressCount);
+    })();
+  }, [params.courseId, userId]);
 
   if (!userId) {
     return redirect("/");
@@ -261,8 +263,8 @@ const ExamIdPage = ({
 
   return (
     <>
-      {quiz ? (
-        <div>
+      {exam ? (
+        <div className="pb-10">
           {hasSubmitted ? (
             <Banner
               variant={wrongAnswers > correctAnswers ? "warning" : "success"}
@@ -279,7 +281,7 @@ const ExamIdPage = ({
                 <span className="mx-4">|</span>
 
                 <h1 className="text-lg md:text-2xl font-medium capitalize">
-                  {quiz?.title} <span>quiz</span>
+                  {exam?.title} <span>exam</span>
                 </h1>
                 <span className="mx-4">|</span>
                 <h1 className="text-lg md:text-2xl font-medium capitalize">
@@ -287,21 +289,19 @@ const ExamIdPage = ({
                 </h1>
               </div>
               <div className="flex space-x-3 ">
+                <p className="text-md">{exam?.description}</p>
                 <p className="text-md">
-                  {canSubmit} Answered Questions {answeredQuestions}
-                </p>
-                <p className="text-md">{quiz?.description}</p>
-                <p className="text-md">
-                  Total questions {quiz?.questions.length}
+                  Total questions {exam?.questions.length}
                 </p>
               </div>
             </div>
           )}
 
-          <div className="flex flex-col px-10 mt-10 items-center relative">
-            <div className="w-[98%] md:w-[95%] flex flex-col gap-4 p-4 mb-3 ">
-                {quiz?.questions.map((question, index) => (
-                  <div>
+          <div className="flex flex-col px-10 mt-10  items-center relative">
+            <Carousel className="w-[98%] md:w-[95%] p-4 mb-3 ">
+              <CarouselContent>
+                {exam?.questions.map((question, index) => (
+                  <CarouselItem key={index} className="">
                     <div className="bg-sky-100 border border-slate-200 rounded-lg p-4 max-w-full ">
                       <div className="w-full flex h-fit flex-col items-end">
                         <p className="font-medium text-slate-500 mb-4 text-right">
@@ -345,7 +345,7 @@ const ExamIdPage = ({
                                     onChange={() =>
                                       handleOptionChange(
                                         question.id,
-                                        option.position
+                                        question.position
                                       )
                                     }
                                   />
@@ -356,41 +356,59 @@ const ExamIdPage = ({
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </CarouselItem>
                 ))}
-            </div>
+              </CarouselContent>
+              {exam.questions.length > 1 ? (
+                <>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </>
+              ) : null}
+            </Carousel>
             <div className="flex flex-col justify-end items-end w-full space-y-3 mr-12 md:mr-20">
-              {hasSubmitted && points != undefined ? (
-                <p>
-                  {`You scored ${points.toFixed(2)} points
-              `}
+              {hasSubmitted && scorePercentage != undefined ? (
+                <p className="text-right w-1/2">
+                  {`You scored Percentage ${scorePercentage.toFixed(2)}% ${
+                    hasTakenTheExamBefore
+                      ? "Your score will be added and aggregated with the score you get when you take the exam after learning the course"
+                      : "Congratulations!"
+                  } `}
                 </p>
               ) : (
                 <p className="">Are you confident that you are done?</p>
               )}
               <div className="flex flex-row space-x-4 items-center">
-                {points > 50 && hasSubmitted ? (
-                  <Link
-                    href={`/courses/${params.courseId}/chapters/${params.chapterId}`}
-                    className={cn(
-                      "bg-teal-500 text-white w-fit font-bold text-sm px-4 py-2 rounded-md"
-                    )}
-                  >
-                    Go back to your course
-                  </Link>
-                ) : (
+                <div className="flex flex-row space-x-4 items-center">
                   <button
                     type="button"
                     onClick={handleSubmit}
                     className={cn(
                       "bg-teal-500 text-white w-fit font-bold text-sm px-4 py-2 rounded-md",
                       (!canSubmit || isSubmitting || hasSubmitted) &&
-                        "bg-slate-400 cursor-not-allowed pointer-events-none"
+                        "bg-slate-400 cursor-not-allowed"
                     )}
                   >
                     Submit
                   </button>
-                )}
+                  {certificateId !== "" &&
+                    certificateId !== undefined &&
+                    hasSubmitted &&
+                    scorePercentage > 50 && (
+                      <PrepareCertificateModal
+                        courseId={params.courseId}
+                        examId={params.examId}
+                        certificateId={certificateId}
+                      >
+                        <Button
+                          size="sm"
+                          className="bg-sky-500 text-white hover:bg-sky-400"
+                        >
+                          Get your certificate
+                        </Button>
+                      </PrepareCertificateModal>
+                    )}
+                </div>
               </div>
             </div>
           </div>
