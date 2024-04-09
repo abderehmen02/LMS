@@ -16,9 +16,9 @@ export const NavbarRoutes = ({fullPageUrl  } : {fullPageUrl : string }  ) => {
   const pathname = usePathname();
   const [isClient , setIsClient ] = useState(false)
   const isClientSideRendering = typeof window === "object"
-  const isTeacherPage = isClientSideRendering ?  pathname?.startsWith("/teacher") : fullPageUrl.includes("/teacher") ; 
-  const isCoursePage =  isClientSideRendering ? pathname?.includes("/courses") : fullPageUrl.includes("/courses") ;
-  const isSearchPage =  isClientSideRendering ? pathname === "/search" : fullPageUrl.includes("/search") ;
+  const isTeacherPage =   pathname?.startsWith("/teacher")  ; 
+  const isCoursePage =   pathname?.includes("/courses") 
+  const isSearchPage =   pathname === "/search" 
 
 
 
@@ -34,20 +34,20 @@ export const NavbarRoutes = ({fullPageUrl  } : {fullPageUrl : string }  ) => {
     )}
     <div className="flex gap-x-2 ml-auto">
       {isClient && <UserButton afterSignOutUrl="/" />}
-      {isTeacherPage || isCoursePage ? (
+      { isClient &&  (isTeacherPage || isCoursePage ? (
         <Link href="/">
-          <Button size="sm" variant="ghost">
-            <LogOut className="h-4 w-4 mr-2" />
+          <Button  size="sm" variant="ghost"  >
+      {  isClient &&     <LogOut className="h-4 w-4 mr-2" />}
             Exit
           </Button>
         </Link>
-      ) : isTeacher(userId) ? (
+      ) : isTeacher(userId)  ? (
         <Link href="/teacher/courses">
           <Button size="sm" variant="ghost">
             Teacher mode
           </Button>
         </Link>
-      ) : null}
+      ) : null)}
     </div> 
   </div>
     
