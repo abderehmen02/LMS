@@ -9,19 +9,30 @@ export async function GET(
   { params }: { params: { certificateId: string } }
 ) {
   try {
+    console.log("getting a request")
     const { userId } = auth();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const certificate = await db.certificate.findUnique({
+    const examData = await db.exam.findFirst({
       where: {
-        id: params.certificateId,
-        userId: userId,
+       certificate : {
+        some : {
+          id : params.certificateId  , 
+          userId : userId ,
+        }
+       } , 
+    
       },
+      include : {
+        certificate : true
+      }
     });
 
+    const certificate = examData?.certificate
+    console.log("id" , params.certificateId , userId , certificate )
     if (!certificate) {
       return new NextResponse("Not found", { status: 404 });
     }

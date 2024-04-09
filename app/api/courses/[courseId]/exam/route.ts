@@ -8,6 +8,7 @@ export async function POST(
   { params }: { params: { courseId: string } }
 ) {
   try {
+    console.log("getting a req")
     const { userId } = auth();
     const { title, description } = await req.json();
 

@@ -27,9 +27,9 @@ const CertificatePage = ({
       setisGettingCertificate(true);
       try {
         const response = await axios.get(
-          `/api/courses/${params.courseId}/exam//${params.examId}/certificate/${params.certificateId}`
+          `/api/courses/${params.courseId}/exam/${params.examId}/certificate/${params.certificateId}`
         );
-
+        console.log("response" , response)
         setCertificate(response.data);
 
         if (!response.data) {
@@ -40,8 +40,9 @@ const CertificatePage = ({
         console.log(response.data);
         console.log("====================================");
       } catch (error) {
+
         console.log("====================================");
-        console.log(error);
+        console.log("error" ,  error);
         console.log("====================================");
         toast.error("Something went wrong");
       } finally {
