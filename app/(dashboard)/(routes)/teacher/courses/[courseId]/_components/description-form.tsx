@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Editor } from "@/components/editor";
+import { Preview } from "@/components/preview";
 
 interface DescriptionFormProps {
   initialData: Course;
@@ -83,8 +84,10 @@ export const DescriptionForm = ({
           "text-sm mt-2",
           !initialData.description && "text-slate-500 italic"
         )}>
-          {initialData.description || "No description"}
-        </p>
+  {!initialData.description && "No description"}
+          {initialData.description && (
+            <Preview value={initialData.description} />
+          )}        </p>
       )}
       {isEditing && (
         <Form {...form}>
