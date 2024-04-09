@@ -15,6 +15,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -115,10 +116,12 @@ export const QuizForm = ({
               name="title"
               render={({ field }) => (
                 <FormItem>
+                                      <FormLabel>Quiz Title</FormLabel>
+
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g. 'Web dev exam"
+                      placeholder=" e.g. 'Web dev exam"
                       {...field}
                     />
                   </FormControl>
@@ -130,7 +133,8 @@ export const QuizForm = ({
               control={form.control}
               name="description"
               render={({ field }) => (
-                <FormItem>
+                <FormItem>                    <FormLabel>Quiz Description</FormLabel>
+
                   <FormControl>
                     <Textarea
                       disabled={isSubmitting}
