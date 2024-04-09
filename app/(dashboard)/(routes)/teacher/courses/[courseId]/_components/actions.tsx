@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -23,7 +23,13 @@ export const Actions = ({
 }: ActionsProps) => {
   const router = useRouter();
   const confetti = useConfettiStore();
+  const [isClient , setIsClient ] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
+
+
+useEffect(()=>{
+  setIsClient(true)
+} , [])
 
   const onClick = async () => {
     try {
@@ -54,7 +60,7 @@ export const Actions = ({
 
       toast.success("Course deleted");
       router.refresh();
-      router.push(`/teacher/courses`);
+      isClient && window.location.replace(`/teacher/courses`)
     } catch {
       toast.error("Something went wrong");
     } finally {
