@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Loader2, Pencil, PlusCircle } from "lucide-react";
+import { Delete, Loader2, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -41,10 +41,12 @@ const [isDeleting , setIsDeleting ] = useState(false)
 
 
 
-const onDelete = async (chapterId : string )=>{
+const onDelete = async ()=>{
   try {
     setIsDeleting(true)
-    await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`);
+    if(!initialData.exams) return 
+    await axios.delete(`/api/courses/${courseId}/exam/${initialData.exams.id}`);
+
 
     toast.success("exam deleted");
     router.refresh();
@@ -178,7 +180,8 @@ const onDelete = async (chapterId : string )=>{
           ) : (
             <div
               className={cn(
-                "flex justify-between items-center py-3 pl-3 gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm"
+                "flex justify-between items-center py-3 pl-3 gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm" ,
+                isDeleting && "bg-red-100 border-red-200 text-red-700 animate-pulse" 
               )}
             >
               <p> {initialData.exams.title}</p>
@@ -191,6 +194,16 @@ const onDelete = async (chapterId : string )=>{
                 >
                   {initialData.exams.isPublished ? "Published" : "Draft"}
                 </Badge>
+                {!isDeleting && (
+                      <div className="ml-auto pr-2 flex items-center gap-x-2">
+                        <Delete
+                          onClick={() => {
+                            onDelete()
+                          }}
+                          className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
+                        />
+
+                      </div>)}
                 {
                   <Pencil
                     onClick={() => onEdit(initialData.exams?.id)}
