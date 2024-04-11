@@ -76,8 +76,9 @@ export async function PATCH(
   }: { params: { courseId: string; examId: string; questionId: string } }
 ) {
   try {
+
     const { userId } = auth();
-    const { isPublished, ...values } = await req.json();
+    const { isPublished  , answer , ...values } = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -94,12 +95,26 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const existingQuestion =  await db.examQuestion.findUnique({
+      where: {
+        id: params.questionId,
+        examId: params.examId,
+      } ,include : {
+        options : true
+      }})
+      var answerPosition ;
+    // if( typeof  values.answer === "number")  {  
+      
+    //   answerPosition = await  existingQuestion?.options.sort((a, b)=>a.position - b.position)[values.answer].position
+    // }
+     
     const question = await db.examQuestion.update({
       where: {
         id: params.questionId,
         examId: params.examId,
       },
       data: {
+        answer : answerPosition || answer , 
         ...values,
       },
     });

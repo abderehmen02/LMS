@@ -26,7 +26,7 @@ export const NavbarRoutes = ({fullPageUrl  } : {fullPageUrl : string }  ) => {
     setIsClient(true)
   } , [] )
   
-    return     <div>
+    return     <div className="flex justify-around px-12 w-full" >
      {isSearchPage && (
       <div className="hidden md:block">
         <SearchInput />

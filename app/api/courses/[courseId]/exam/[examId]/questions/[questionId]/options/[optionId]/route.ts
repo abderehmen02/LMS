@@ -61,14 +61,18 @@ export async function DELETE(
       },
     });
 
-    await db.examQuestion.update({
-      where : {
-        id : params.questionId ,
-        examId : params.examId 
-      }  , data : {
-      answer : "1"
-      }
-          })
+    console.log("option question" , optionQuestion  , deletedOption.position)
+if(Number(optionQuestion?.answer) == deletedOption.position){
+  await db.examQuestion.update({
+    where : {
+      id : params.questionId ,
+      examId : params.examId 
+    }  , data : {
+    answer : "1"
+    }
+        })
+}
+ 
       
     if (optionQuestion && optionQuestion?.options.length < 3) {
       await db.examQuestion.update({

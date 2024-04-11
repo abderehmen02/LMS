@@ -51,6 +51,7 @@ export const OptionList = ({
   questionId,
   onReorder,
 }: OptionListProps) => {
+  console.log("answer" , answer)
   const [isMounted, setIsMounted] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [options, setCurrentOptions] = useState(items);
