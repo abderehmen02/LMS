@@ -20,15 +20,13 @@ interface Message {
 const SupportBotTab = () => {
   const [messages, setMessages] = useState<Message[]>(() => {
     // Load messages from localStorage on initial render
-    const storedMessages = localStorage.getItem("support-bot-messages");
-    return storedMessages ? JSON.parse(storedMessages) : [];
+    return  [];
   });
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Save messages to localStorage whenever messages change
-    localStorage.setItem("support-bot-messages", JSON.stringify(messages));
     scrollToBottom();
   }, [messages]);
 

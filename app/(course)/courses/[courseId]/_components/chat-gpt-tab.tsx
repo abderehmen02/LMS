@@ -20,15 +20,13 @@ interface Message {
 const ChatGPTTab = () => {
   const [messages, setMessages] = useState<Message[]>(() => {
     // Load messages from localStorage on initial render
-    const storedMessages = localStorage.getItem("chatMessages");
-    return storedMessages ? JSON.parse(storedMessages) : [];
+    return [];
   });
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Save messages to localStorage whenever messages change
-    localStorage.setItem("chatMessages", JSON.stringify(messages));
     scrollToBottom();
   }, [messages]);
 
@@ -67,7 +65,7 @@ const ChatGPTTab = () => {
 
       // Add the current user message to queryMessages
       queryMessages.push({ role: "user", content: message });
-
+      console.log(process.env.NEXT_PUBLIC_CHATGPY_API_KEY)
       // Fetch response from ChatGPT
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",
@@ -84,7 +82,7 @@ const ChatGPTTab = () => {
           },
         }
       );
-
+      console.log("response" , response)
       // Extract the ChatGPT response
       const chatGPTResponse: string = response.data.choices[0].message.content;
 
