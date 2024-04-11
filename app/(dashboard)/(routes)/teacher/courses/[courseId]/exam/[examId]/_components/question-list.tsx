@@ -51,7 +51,7 @@ export const QuestionList = ({
 
     const bulkUpdateData = updatedQuestions.map((question) => ({
       id: question.id,
-      position: items.findIndex((item) => item.id === question.id),
+      position: items.findIndex((item) => item.id === question.id) + 1,
     }));
 
     onReorder(bulkUpdateData);

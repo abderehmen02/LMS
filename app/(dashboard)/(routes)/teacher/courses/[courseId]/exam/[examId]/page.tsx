@@ -34,6 +34,10 @@ const ChapterIdPage = async ({
     },
   });
 
+if(exam?.questions) {
+  exam.questions = exam.questions.sort((a, b) => a.position - b.position)
+}
+
   if (!exam) {
     return redirect("/");
   }
