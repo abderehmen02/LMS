@@ -9,7 +9,6 @@ import { Preview } from "@/components/preview";
 
 import { VideoPlayer } from "./_components/video-player";
 import { CourseProgressButton } from "./_components/course-progress-button";
-
 const LessonIdPage = async ({
   params,
 }: {
@@ -42,15 +41,18 @@ const LessonIdPage = async ({
 
   const completeOnEnd = !userProgress?.isCompleted;
 
+
+
+
   return (
     <div>
-      {userProgress?.isCompleted && (
+    {userProgress?.isCompleted && (
         <Banner variant="success" label="You already completed this lesson." />
-      )}
+      )} 
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
         {lesson.videoUrl && (
           <div className="p-4">
-            <VideoPlayer
+       <VideoPlayer
               chapterId={params.chapterId}
               title={chapter.title}
               lessonId={lesson.id}
@@ -60,7 +62,7 @@ const LessonIdPage = async ({
               nextChapterFirstLessonId={nextChapter?.lessons[0].id}
               completeOnEnd={completeOnEnd}
               url={lesson.videoUrl}
-            />
+            /> 
           </div>
         )}
         <div className="space-y-4">

@@ -107,7 +107,7 @@ const CourseLayout = async ({
       <div className="hidden md:flex h-full w-80 flex-col fixed right-0 inset-y-0 z-50">
         <CourseSidebar course={course} progressCount={progressCount} />
       </div>
-      <main className="md:pr-80 pt-[80px] h-full">{children}</main>
+      <div className="md:pr-80 pt-[80px] h-full">{children}</div>
       <div className="fixed left-5 bottom-5 z-50">
         <ChatWidget>
           <Button

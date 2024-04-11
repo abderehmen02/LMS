@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import MuxPlayer from "@mux/mux-player-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
@@ -36,8 +36,11 @@ export const VideoPlayer = ({
 }: VideoPlayerProps) => {
   const [isReady, setIsReady] = useState(false);
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false)
   const confetti = useConfettiStore();
-
+useEffect(()=>{
+setIsClient(true)
+} , [] )
   const onEnd = async () => {
     try {
       if (completeOnEnd) {
@@ -84,7 +87,7 @@ export const VideoPlayer = ({
         <div className="bg-black px-10 py-2">
           <p className="text-white/70 capitalize">{title}</p>
         </div>
-        {url && (
+         { isClient &&  url && (
           <ReactPlayer
             url={url}
             playing={isReady} // Start paused initially
@@ -94,8 +97,7 @@ export const VideoPlayer = ({
             height={450}
             controls={true} // Show player controls
           />
-        )}
-      </div>
+        )}       </div>
     </div>
   );
 };
