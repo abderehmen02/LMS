@@ -37,7 +37,7 @@ const {courseId , chapterId} = useParams()
         `/api/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}`
       );
 
-      toast.success("Chapter deleted");
+      toast.success("Lesson deleted");
       router.refresh();
 
     }

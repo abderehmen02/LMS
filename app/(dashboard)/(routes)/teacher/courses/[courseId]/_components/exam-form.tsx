@@ -36,6 +36,30 @@ const formSchema = z.object({
 export const ExamForm = ({ initialData, courseId }: ExamFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+const [isDeleting , setIsDeleting ] = useState(false)
+
+
+
+
+const onDelete = async (chapterId : string )=>{
+  try {
+    setIsDeleting(true)
+    await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`);
+
+    toast.success("exam deleted");
+    router.refresh();
+
+  }
+   catch(err){
+    console.error(err)
+    toast.error("something went wrong!")
+   }
+   finally {
+    setIsDeleting(false)
+   }
+}
+
+
 
   const toggleCreating = () => {
     setIsCreating((current) => !current);
