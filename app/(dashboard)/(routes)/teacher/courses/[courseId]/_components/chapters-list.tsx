@@ -33,7 +33,6 @@ export const ChaptersList = ({
 }: ChaptersListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState(items);
-  const [deleting , setDeleting ] = useState(false)
   const {courseId} = useParams()
   const router = useRouter()
   const [currentDeletingItemId , setCurrentDeletingItemId ] = useState<string | null>(null)
@@ -129,7 +128,7 @@ export const ChaptersList = ({
                       >
                         {chapter.isPublished ? "Published" : "Draft"}
                       </Badge>
-                      {!deleting && (
+                      {!currentDeletingItemId && (
                       <div className="ml-auto pr-2 flex items-center gap-x-2">
                         <Delete
                           onClick={() => {

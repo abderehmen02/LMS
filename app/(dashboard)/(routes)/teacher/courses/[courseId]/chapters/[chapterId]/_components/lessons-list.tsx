@@ -8,10 +8,13 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Grip, Pencil } from "lucide-react";
+import { Delete, Grip, Pencil } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useParams, useRouter } from "next/navigation";
 
 interface LessonsListProps {
   items: Lesson[];
@@ -22,6 +25,31 @@ interface LessonsListProps {
 export const LessonsList = ({ items, onReorder, onEdit }: LessonsListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [lessons, setLessons] = useState(items);
+  const [currentDeletingItemId , setCurrentDeletingItemId ] = useState<string | null>(null)
+const router = useRouter()
+const {courseId , chapterId} = useParams()
+
+
+  const onDelete = async (lessonId : string )=>{
+    try {
+      setCurrentDeletingItemId(lessonId)
+      await axios.delete(
+        `/api/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}`
+      );
+
+      toast.success("Chapter deleted");
+      router.refresh();
+
+    }
+     catch(err){
+      console.error(err)
+      toast.error("something went wrong!")
+     }
+     finally {
+      setCurrentDeletingItemId(null)
+     }
+  }
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -73,7 +101,9 @@ export const LessonsList = ({ items, onReorder, onEdit }: LessonsListProps) => {
                     className={cn(
                       "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm",
                       lesson.isPublished &&
-                        "bg-sky-100 border-sky-200 text-sky-700"
+                        "bg-sky-100 border-sky-200 text-sky-700" , 
+                        currentDeletingItemId === lesson.id && "bg-red-100 border-red-200 text-red-700 animate-pulse"
+
                     )}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
@@ -98,6 +128,16 @@ export const LessonsList = ({ items, onReorder, onEdit }: LessonsListProps) => {
                       >
                         {lesson.isPublished ? "Published" : "Draft"}
                       </Badge>
+                      {!currentDeletingItemId && (
+                      <div className="ml-auto pr-2 flex items-center gap-x-2">
+                        <Delete
+                          onClick={() => {
+                            onDelete(lesson.id);
+                          }}
+                          className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
+                        />
+
+                      </div>)}
                       <Pencil
                         onClick={() => onEdit(lesson.id)}
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
