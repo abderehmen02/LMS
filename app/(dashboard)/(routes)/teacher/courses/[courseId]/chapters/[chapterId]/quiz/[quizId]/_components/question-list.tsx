@@ -8,7 +8,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Grip, Pencil } from "lucide-react";
+import { ChevronDownSquare, Grip, Pencil } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -38,12 +38,10 @@ export const QuestionList = ({
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
-    console.log("RESULT", result);
 
     const items = Array.from(questions);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-
     const startIndex = Math.min(result.source.index, result.destination.index);
     const endIndex = Math.max(result.source.index, result.destination.index);
 
@@ -53,10 +51,10 @@ export const QuestionList = ({
 
     const bulkUpdateData = updatedQuestions.map((questions) => ({
       id: questions.id,
-      position: items.findIndex((item) => item.id === questions.id),
+      prompt : questions.prompt ,
+      position: items.findIndex((item) => item.id === questions.id) + 1,
     }));
 
-    console.log("QUESTIONS_REORDER", bulkUpdateData);
 
     onReorder(bulkUpdateData);
   };
@@ -64,7 +62,6 @@ export const QuestionList = ({
   if (!isMounted) {
     return null;
   }
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="questions">
