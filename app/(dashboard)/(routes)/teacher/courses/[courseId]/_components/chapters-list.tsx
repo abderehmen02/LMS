@@ -8,10 +8,17 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Grip, Pencil } from "lucide-react";
+import { Delete, Grip, Pencil } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useParams, useRouter } from "next/navigation";
 
 interface ChaptersListProps {
   items: Chapter[];
@@ -26,7 +33,10 @@ export const ChaptersList = ({
 }: ChaptersListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState(items);
-
+  const [deleting , setDeleting ] = useState(false)
+  const {courseId} = useParams()
+  const router = useRouter()
+  const [currentDeletingItemId , setCurrentDeletingItemId ] = useState<string | null>(null)
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -34,7 +44,23 @@ export const ChaptersList = ({
   useEffect(() => {
     setChapters(items);
   }, [items]);
+  const onDelete = async (chapterId : string )=>{
+    try {
+      setCurrentDeletingItemId(chapterId)
+      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`);
 
+      toast.success("Chapter deleted");
+      router.refresh();
+
+    }
+     catch(err){
+      console.error(err)
+      toast.error("something went wrong!")
+     }
+     finally {
+      setCurrentDeletingItemId(null)
+     }
+  }
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -56,7 +82,7 @@ export const ChaptersList = ({
 
     onReorder(bulkUpdateData);
   };
-
+  
   if (!isMounted) {
     return null;
   }
@@ -77,7 +103,8 @@ export const ChaptersList = ({
                     className={cn(
                       "flex items-center gap-x-2 bg-sky-200 border-sky-200 border text-sky-700 rounded-md mb-4 text-sm",
                       chapter.isPublished &&
-                        "bg-green-100 border-green-200 text-green-700"
+                        "bg-green-100 border-green-200 text-green-700" ,
+                      currentDeletingItemId === chapter.id && "bg-red-100 border-red-200 text-red-700 animate-pulse"
                     )}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
@@ -102,6 +129,16 @@ export const ChaptersList = ({
                       >
                         {chapter.isPublished ? "Published" : "Draft"}
                       </Badge>
+                      {!deleting && (
+                      <div className="ml-auto pr-2 flex items-center gap-x-2">
+                        <Delete
+                          onClick={() => {
+                            onDelete(chapter.id);
+                          }}
+                          className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
+                        />
+
+                      </div>)}
                       <Pencil
                         onClick={() => onEdit(chapter.id)}
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
