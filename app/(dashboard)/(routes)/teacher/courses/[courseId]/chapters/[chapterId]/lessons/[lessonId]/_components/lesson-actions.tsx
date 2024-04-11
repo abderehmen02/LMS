@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -26,7 +26,7 @@ export const LessonActions = ({
 }: LessonActionsProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
+  const [isClient , setIsClient ] = useState(false)
   const onClick = async () => {
     try {
       setIsLoading(true);
@@ -61,14 +61,17 @@ export const LessonActions = ({
 
       toast.success("Lesson deleted");
       router.refresh();
-      router.push(`/teacher/courses/${courseId}/chapter/${chapterId}`);
+      
+      isClient &&      window.location.replace(`/teacher/courses/${courseId}/chapters/${chapterId}`);
     } catch {
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
   };
-
+useEffect(()=>{
+setIsClient(true )
+} , [] )
   return (
     <div className="flex items-center gap-x-2">
       <Button
