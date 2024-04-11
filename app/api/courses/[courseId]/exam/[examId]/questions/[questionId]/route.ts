@@ -44,7 +44,6 @@ export async function DELETE(
         id: params.questionId,
       },
     });
-
     const publishedQuestionInExam = await db.examQuestion.findMany({
       where: {
         examId: params.examId,
