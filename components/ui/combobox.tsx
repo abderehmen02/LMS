@@ -108,7 +108,7 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
                     value === option.value ? "opacity-100" : "opacity-0"
                   )}
                 />
-            <div className="w-full flex justify-between z-40" onClick={(e)=>{ e.stopPropagation(); handleDeleteCategory(option.value) }} >   <span className="inline-block" >{option.label}</span> <Trash className="flex text-xs cursor-pointer"  /></div>
+            <div className="w-full flex justify-between z-40" >   <span className="inline-block" >{option.label}</span> <Trash onClick={(e)=>{ e.stopPropagation() ; handleDeleteCategory(option.value) }}  className="flex text-xs cursor-pointer"  /></div>
               </CommandItem>
             ))}
           </CommandGroup>
