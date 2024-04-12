@@ -164,9 +164,15 @@ const ExamIdPage = ({
     if (quiz) {
       // Calculate the total time based on the number of questions
       const totalTime = quiz.questions.length * TIME_PER_QUESTION_MS;
-      setTimeRemaining(totalTime);
+      const storageTime  = localStorage.getItem(`${quiz?.id}-time`)
+      setTimeRemaining( storageTime ? Number(storageTime) :  totalTime);
+      
     }
   }, [TIME_PER_QUESTION_MS, quiz]);
+
+useEffect(()=>{
+localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
+} , [timeRemaining] )
 
   // Function to decrement the time remaining every second
   const countdown = () => {
