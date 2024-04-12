@@ -59,17 +59,7 @@ setIsClient(true)
         toast.success("Progress updated");
         router.refresh();
 
-        if (nextLessonId) {
-          router.push(
-            `/courses/${courseId}/chapters/${chapterId}/lessons/${nextLessonId}`
-          );
-        }
 
-        if (!nextLessonId && nextChapterId) {
-          router.push(
-            `/courses/${courseId}/chapters/${nextChapterId}/lessons/${nextChapterFirstLessonId}`
-          );
-        }
       }
     } catch {
       toast.error("Something went wrong");
