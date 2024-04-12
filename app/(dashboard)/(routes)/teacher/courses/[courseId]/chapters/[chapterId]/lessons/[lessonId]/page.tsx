@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
+import { ArrowLeft, Eye, File, LayoutDashboard, Video } from "lucide-react";
 
 import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
@@ -11,6 +11,7 @@ import { LessonTitleForm } from "./_components/lesson-title-form";
 import { LessonDescriptionForm } from "./_components/lesson-description-form";
 import { LessonVideoForm } from "./_components/lesson-video-form";
 import { LessonActions } from "./_components/lesson-actions";
+import { AttachmentForm } from "./_components/attachment-form";
 
 const LessonIdPage = async ({
   params,
@@ -28,6 +29,9 @@ const LessonIdPage = async ({
       id: params.lessonId,
       chapterId: params.chapterId,
     },
+    include : {
+      attachments : true 
+    }
   });
 
   if (!lesson) {
@@ -98,6 +102,13 @@ const LessonIdPage = async ({
                 chapterId={params.chapterId}
                 lessonId={params.lessonId}
               />
+                          <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={File} />
+                <h2 className="text-xl">Resources & Attachments (Optional)</h2>
+              </div>
+              <AttachmentForm initialData={{...lesson , attachments : lesson.attachments }}   />
+            </div>
             </div>
           </div>
           <div>

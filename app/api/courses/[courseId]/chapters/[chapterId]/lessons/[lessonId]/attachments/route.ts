@@ -25,7 +25,6 @@ export async function POST(
     if (!courseOwner) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    
     const attachment = await db.lessonAttachment.create({
       data: {
         url,
@@ -34,7 +33,6 @@ export async function POST(
         
       }
     });
-
     return NextResponse.json(attachment);
   } catch (error) {
     console.log("COURSE_ID_ATTACHMENTS", error);

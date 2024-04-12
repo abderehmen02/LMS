@@ -5,16 +5,16 @@ import axios from "axios";
 import { Pencil, PlusCircle, ImageIcon, File, Loader2, X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { Attachment, Course } from "@prisma/client";
+import { useParams, useRouter } from "next/navigation";
+import { Attachment, Course, Lesson, LessonAttachment } from "@prisma/client";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
 
 interface AttachmentFormProps {
-  initialData: Course & { attachments: Attachment[] };
-  courseId: string;
+  initialData: Lesson & { attachments: LessonAttachment[] };
+  
 };
 
 const formSchema = z.object({
@@ -23,22 +23,22 @@ const formSchema = z.object({
 
 export const AttachmentForm = ({
   initialData,
-  courseId
 }: AttachmentFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
+  const {courseId , chapterId  , lessonId} = useParams()
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/courses/${courseId}/attachments`, values);
+      await axios.post(`/api/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/attachments`, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
-    } catch {
+    } catch (err){
+      console.log("error when creating attachment" , err ) 
       toast.error("Something went wrong");
     }
   };
@@ -46,7 +46,7 @@ export const AttachmentForm = ({
   const onDelete = async (id: string) => {
     try {
       setDeletingId(id);
-      await axios.delete(`/api/courses/${courseId}/attachments/${id}`);
+      await axios.delete(`/api/courses/${courseId}/lessons/${lessonId}/attachments/${id}`);
       toast.success("Attachment deleted");
       router.refresh();
     } catch {
@@ -59,7 +59,7 @@ export const AttachmentForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course attachments
+        Lesson attachments
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing && (
             <>Cancel</>
