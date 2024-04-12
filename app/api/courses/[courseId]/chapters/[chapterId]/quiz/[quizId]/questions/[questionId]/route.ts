@@ -23,7 +23,6 @@ export async function DELETE(
         userId,
       },
     });
-
     if (!ownCourse) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -34,7 +33,6 @@ export async function DELETE(
         quizId: params.quizId,
       },
     });
-
     if (!question) {
       return new NextResponse("Not Found", { status: 404 });
     }
@@ -44,14 +42,12 @@ export async function DELETE(
         id: params.questionId,
       },
     });
-
     const publishedQuestionInExam = await db.quizQuestion.findMany({
       where: {
         quizId: params.quizId,
         isPublished: true,
       },
     });
-
     if (!publishedQuestionInExam.length) {
       await db.quizQuestion.update({
         where: {
@@ -62,7 +58,6 @@ export async function DELETE(
         },
       });
     }
-
     return NextResponse.json(deletedQuestion);
   } catch (error) {
     console.log("[QUESTION_ID_DELETE]", error);
