@@ -1,6 +1,6 @@
 "use client";
 
-import { BookIcon, CheckCircle, PlayCircle } from "lucide-react";
+import { BookIcon, CheckCircle, PlayCircle, ShieldQuestion } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@clerk/nextjs";
@@ -182,13 +182,9 @@ export const CourseSidebarItem = ({
                   {hasTakenQuiz ? (
                     <CheckCircle size={22} className={cn("text-emerald-500")} />
                   ) : (
-                    <PlayCircle
-                      size={22}
-                      className={cn("text-yellow-600 hover:text-yellow-700")}
-                    />
+                    <ShieldQuestion size={22}                        className={cn("text-yellow-600 hover:text-yellow-700")} />
                   )}
                   <p>
-                    <span>Quiz: </span>
                     {quiz.title}
                   </p>
                 </div>
