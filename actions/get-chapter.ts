@@ -49,7 +49,11 @@ export const getChapter = async ({
         courseId: courseId,
       },
     });
-
+    const lessonAttachments = await db.lessonAttachment.findMany({
+      where : {
+        lessonId : lessonId
+      }
+    })
     nextLesson = await db.lesson.findFirst({
       where: {
         chapterId: chapterId,
@@ -96,10 +100,12 @@ export const getChapter = async ({
       nextLesson,
       nextChapter,
       userProgress,
+      lessonAttachments
     };
   } catch (error) {
     console.log("[GET_CHAPTER]", error);
     return {
+      lessonAttachments : null , 
       lesson: null,
       chapter: null,
       course: null,

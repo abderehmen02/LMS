@@ -27,6 +27,7 @@ const LessonIdPage = async ({
     attachments,
     nextLesson,
     nextChapter,
+    lessonAttachments , 
     userProgress,
   } = await getChapter({
     userId,
@@ -86,6 +87,27 @@ const LessonIdPage = async ({
             <p className="text-lg text-slate-700 px-4">Lesson Description</p>
             <Preview value={lesson.description!} />
           </div>
+          <Separator />
+
+          {!!lessonAttachments.length && (
+            <div>
+              <p className="text-lg text-slate-700 px-4">Lesson attachments</p>
+              <div className="p-4">
+                {lessonAttachments.map((attachment) => (
+                  <a
+                    href={attachment.url}
+                    target="_blank"
+                    key={attachment.id}
+                    className="flex space-x-2 items-center p-3 w-full bg-sky-200 border text-sky-700 rounded-md hover:underline"
+                  >
+                    <File />
+                    <p className="line-clamp-1">{attachment.name}</p>
+                  </a>
+                ))}
+              </div>
+              </div>
+          )}
+
           {!!attachments.length && (
             <>
               <Separator />
