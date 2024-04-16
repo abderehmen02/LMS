@@ -21,9 +21,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { db } from "@/lib/db";
 
 type ExamWithQuestionsAndOptions = Prisma.ExamGetPayload<{
-  include: {
+    select : {
+      timeToFinish : true
+    } ,
+    include: {
     certificate: true;
     questions: {
       where: {
@@ -67,8 +71,7 @@ const ExamIdPage = ({
   }>({});
 
   // Calculate the time per question (5 minutes)
-  const TIME_PER_QUESTION_MS = 5 * 60 * 1000;
-
+  
   const [answeredQuestions, setAnswersQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
@@ -149,10 +152,10 @@ const ExamIdPage = ({
   useEffect(() => {
     // Calculate the total time based on the number of questions
     if (exam) {
-      const totalTime = exam.questions.length * TIME_PER_QUESTION_MS;
-      setTimeRemaining(totalTime);
+;
+      setTimeRemaining(exam?.timeToFinish ||  5 * 60 * 1000);
     }
-  }, [TIME_PER_QUESTION_MS, exam]);
+  }, [ exam]);
 
   // Function to decrement the time remaining every second
   const countdown = () => {

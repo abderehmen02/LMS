@@ -12,6 +12,7 @@ import { ExamDescriptionForm } from "./_components/exam-description-form";
 import { ExamActions } from "./_components/exam-actions";
 import { QuestionForm } from "./_components/question-form";
 import { FaQuestion } from "react-icons/fa";
+import { TimeToFinishForm } from "./_components/timeToFinishForm";
 
 const ChapterIdPage = async ({
   params,
@@ -29,9 +30,9 @@ const ChapterIdPage = async ({
       id: params.examId,
       courseId: params.courseId,
     },
-    include: {
-      questions: true,
-    },
+    include : {
+      questions: true 
+    } 
   });
 
 if(exam?.questions) {
@@ -54,7 +55,7 @@ if(exam?.questions) {
   const completionText = `(${completedFields}/${totalFields})`;
 
   const isComplete = requiredFields.every(Boolean);
-
+console.log("exam" , exam)
   return (
     <>
       {!exam.isPublished && (
@@ -101,6 +102,10 @@ if(exam?.questions) {
                 courseId={params.courseId}
                 examId={params.examId}
               />
+              <TimeToFinishForm                 initialData={{...exam , timeToFinish : String(exam.timeToFinish) || String(900000) }}
+                courseId={params.courseId}
+                examId={params.examId}
+ />
               <ExamDescriptionForm
                 initialData={exam}
                 courseId={params.courseId}

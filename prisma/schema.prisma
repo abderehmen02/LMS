@@ -172,7 +172,7 @@ model Exam {
   isPublished  Boolean        @default(false)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-
+  timeToFinish  Int?         @default(300000)
   @@index([courseId])
 }
 

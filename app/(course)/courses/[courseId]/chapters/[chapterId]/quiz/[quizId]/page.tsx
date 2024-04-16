@@ -65,7 +65,7 @@ const ExamIdPage = ({
   }>({});
 
   // Calculate the time per question (5 minutes)
-  const TIME_PER_QUESTION_MS = 5 * 60 * 1000;
+  const TIME_PER_QUESTION_MS =  5 * 60 * 1000;
 
   const [answeredQuestions, setAnsweredQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -272,7 +272,7 @@ localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
           {hasSubmitted ? (
             <Banner
               variant={wrongAnswers > correctAnswers ? "warning" : "success"}
-              label={`Answered Questions: ${answeredQuestions}    |    Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
+              label={`Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
             />
           ) : (
             <div className="w-full flex flex-col justify-center items-end h-12 pt-12 px-6">
@@ -362,23 +362,14 @@ localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
             <div className="flex flex-col justify-end items-end w-full space-y-3 mr-12 md:mr-20">
               {hasSubmitted && points != undefined ? (
                 <p>
-                  {`You scored ${points.toFixed(2)} points
+                  {`You scored ${Math.floor(points)} %
               `}
                 </p>
               ) : (
                 <p className="">Are you confident that you are done?</p>
               )}
               <div className="flex flex-row space-x-4 items-center">
-                {points > 50 && hasSubmitted ? (
-                  <Link
-                    href={`/courses/${params.courseId}/chapters/${params.chapterId}`}
-                    className={cn(
-                      "bg-teal-500 text-white w-fit font-bold text-sm px-4 py-2 rounded-md"
-                    )}
-                  >
-                    Go back to your course
-                  </Link>
-                ) : (
+                {points > 50 && hasSubmitted ? null : (
                   <button
                     type="button"
                     onClick={handleSubmit}
