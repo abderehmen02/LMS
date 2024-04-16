@@ -129,7 +129,7 @@ export const CourseSidebar = async ({
           ) : null}
           {exam?.id ? (
             hasCertificate ? (
-              <Link
+           <div className="flex flex-col gap-2" >   <Link
                 href={`/courses/${course.id}/exam/${exam.id}/certificate/${certificateId}`}
                 prefetch={false}
                 className={cn(
@@ -143,7 +143,21 @@ export const CourseSidebar = async ({
                     progressCount === 100 && "text-emerald-500"
                   )}
                 />
-              </Link>
+              </Link>   <Link
+                href={`/courses/${course.id}/exam/${exam.id}`}
+                prefetch={false}
+                className={cn(
+                  "flex items-center text-right gap-x-2 px-4 bg-emerald-500/20 text-emerald-500 text-sm font-[500] py-4 transition-all hover:text-emerald-600 hover:bg-emerald-500/20"
+                )}
+              >
+                Retake Exam
+                <ArrowRight
+                  className={cn(
+                    "ml-4 text-slate-500",
+                    progressCount === 100 && "text-emerald-500"
+                  )}
+                />
+              </Link></div>
             ) : (
               <Link
                 href={`/courses/${course.id}/exam/${exam.id}`}
