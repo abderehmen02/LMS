@@ -268,7 +268,7 @@ const ExamIdPage = ({
           {hasSubmitted ? (
             <Banner
               variant={wrongAnswers > correctAnswers ? "warning" : "success"}
-              label={`Answered Questions: ${answeredQuestions}    |    Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
+              label={`Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
             />
           ) : (
             <div className="w-full flex flex-col justify-center items-end h-12 pt-12 px-6">
@@ -369,7 +369,7 @@ const ExamIdPage = ({
             <div className="flex flex-col justify-end items-end w-full space-y-3 mr-12 md:mr-20">
               {hasSubmitted && scorePercentage != undefined ? (
                 <p className="text-right w-1/2">
-                  {`You scored Percentage ${scorePercentage.toFixed(2)}% ${
+                  {`You scored Percentage ${Math.floor(scorePercentage)}% ${
                     hasTakenTheExamBefore
                       ? "Your score will be added and aggregated with the score you get when you take the exam after learning the course"
                       : "Congratulations!"

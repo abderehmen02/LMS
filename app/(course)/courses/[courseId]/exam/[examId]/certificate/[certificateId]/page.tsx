@@ -143,7 +143,7 @@ console.log("certificate" , certificate)
             <div className="min-h-full h-full bg-sky-700 w-40 flex justify-center border-r-8 border-l-8 border-green-700">
               <div className="bg-sky-700 h-full w-full relative">
                 <Image
-                  src="/badge.jpg"
+                  src="/favicon.ico"
                   alt="badge"
                   width={180}
                   height={180}
