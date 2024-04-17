@@ -284,15 +284,15 @@ const ExamIdPage = ({
                 <span className="mx-4">|</span>
 
                 <h1 className="text-lg md:text-2xl font-medium capitalize">
-                  {exam?.title} <span>exam</span>
+                  {exam?.title} 
                 </h1>
-                <span className="mx-4">|</span>
-                <h1 className="text-lg md:text-2xl font-medium capitalize">
+                {/* <span className="mx-4">|</span> */}
+                {/* <h1 className="text-lg md:text-2xl font-medium capitalize">
                   {course?.title}
-                </h1>
+                </h1> */}
               </div>
               <div className="flex space-x-3 ">
-                <p className="text-md">{exam?.description}</p>
+                {/* <p className="text-md">{exam?.description}</p> */}
                 <p className="text-md">
                   Total questions {exam?.questions.length}
                 </p>

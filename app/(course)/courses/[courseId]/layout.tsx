@@ -9,6 +9,7 @@ import { CourseNavbar } from "./_components/course-navbar";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { ChatWidget } from "./_components/chatbot-popup";
+import { headers } from "next/headers";
 
 const CourseLayout = async ({
   children,
@@ -18,7 +19,9 @@ const CourseLayout = async ({
   params: { courseId: string; chapterId: string };
 }) => {
   const { userId } = auth();
-
+  const headersList = headers()
+  const header_url = headersList.get('x-url') || "";
+  console.log("header url" , header_url)
   if (!userId) {
     return redirect("/");
   }
@@ -101,12 +104,12 @@ const CourseLayout = async ({
 
   return (
     <div className="h-full">
-      <div className="h-[80px] md:pr-80 fixed inset-y-0 w-full z-50">
+      { !header_url.includes("exam") && <><div className="h-[80px] md:pr-80 fixed inset-y-0 w-full z-50">
         <CourseNavbar course={course} progressCount={progressCount} />
       </div>
       <div className="hidden md:flex h-full w-80 flex-col fixed right-0 inset-y-0 z-50">
         <CourseSidebar course={course} progressCount={progressCount} />
-      </div>
+      </div> </>}
       <div className="md:pr-80 pt-[80px] h-full">{children}</div>
       <div className="fixed left-5 bottom-5 z-50">
         <ChatWidget>
