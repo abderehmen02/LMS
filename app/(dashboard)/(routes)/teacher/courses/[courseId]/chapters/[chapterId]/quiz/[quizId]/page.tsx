@@ -8,7 +8,6 @@ import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
 import { QuizTitleForm } from "./_components/quiz-title-form";
-import { QuizDescriptionForm } from "./_components/quiz-description-form";
 import { QuizActions } from "./_components/quiz-actions";
 import { QuestionForm } from "./_components/question-form";
 import { FaQuestion } from "react-icons/fa";
@@ -94,12 +93,6 @@ quiz.questions = quiz.questions.sort((a , b)=>a.position - b.position)
                 <h2 className="text-xl">Customize your Quiz</h2>
               </div>
               <QuizTitleForm
-                initialData={quiz}
-                chapterId={params.chapterId}
-                courseId={params.courseId}
-                quizId={params.quizId}
-              />
-              <QuizDescriptionForm
                 initialData={quiz}
                 chapterId={params.chapterId}
                 courseId={params.courseId}
