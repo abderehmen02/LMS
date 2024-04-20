@@ -8,7 +8,6 @@ import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
 import { ExamTitleForm } from "./_components/exam-title-form";
-import { ExamDescriptionForm } from "./_components/exam-description-form";
 import { ExamActions } from "./_components/exam-actions";
 import { QuestionForm } from "./_components/question-form";
 import { FaQuestion } from "react-icons/fa";
@@ -55,7 +54,6 @@ if(exam?.questions) {
   const completionText = `(${completedFields}/${totalFields})`;
 
   const isComplete = requiredFields.every(Boolean);
-console.log("exam" , exam)
   return (
     <>
       {!exam.isPublished && (
@@ -106,11 +104,7 @@ console.log("exam" , exam)
                 courseId={params.courseId}
                 examId={params.examId}
  />
-              <ExamDescriptionForm
-                initialData={exam}
-                courseId={params.courseId}
-                examId={params.examId}
-              />
+ 
             </div>
           </div>
           <div>

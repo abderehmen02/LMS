@@ -161,7 +161,6 @@ model Exam {
   courseId     String         @unique
   course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title        String
-  description  String?
   userId       String?        @default("nil")
   questions    ExamQuestion[]
   certificate  Certificate[]
