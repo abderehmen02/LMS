@@ -7,7 +7,7 @@ import { Preview } from "@/components/preview";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useCallback, useEffect, useState } from "react";
-import { Prisma, Certificate, Course } from "@prisma/client";
+import { Prisma, Certificate, Course, Lesson } from "@prisma/client";
 import axios from "axios";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 import { getProgress } from "@/actions/get-progress";
@@ -22,6 +22,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { db } from "@/lib/db";
+import Link  from "next/link";
+import { workerData } from "worker_threads";
 
 type ExamWithQuestionsAndOptions = Prisma.ExamGetPayload<{
     select : {
@@ -35,6 +37,7 @@ type ExamWithQuestionsAndOptions = Prisma.ExamGetPayload<{
       };
       include: {
         options: true;
+        lesson : true
       };
     };
   };
@@ -74,7 +77,7 @@ const ExamIdPage = ({
   
   const [answeredQuestions, setAnswersQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState<{questionId : string , lesson : Lesson | null }[]>([]);
   const [scorePercentage, setScorePercentage] = useState(0);
 
   const hasTakenTheExamBefore =
@@ -209,14 +212,13 @@ const ExamIdPage = ({
         if (userSelectedPosition === correctAnswerPosition) {
           correct++;
         } else {
-          wrong++;
+          setWrongAnswers(curr=>[...curr , {questionId :question.id , lesson : question.lesson }])
         }
       }
     });
 
     setAnswersQuestions(answered);
     setCorrectAnswers(correct);
-    setWrongAnswers(wrong);
     setScorePercentage((correct / totalQuestions) * 100);
 
     // Enable submission when all questions are answered
@@ -270,7 +272,7 @@ const ExamIdPage = ({
         <div className="pb-10">
           {hasSubmitted ? (
             <Banner
-              variant={wrongAnswers > correctAnswers ? "warning" : "success"}
+              variant={wrongAnswers.length > correctAnswers ? "warning" : "success"}
               label={`Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
             />
           ) : (
@@ -302,7 +304,9 @@ const ExamIdPage = ({
 
           <div className="flex flex-col px-10 mt-10  gap-4 w-full items-center  relative">
           
-                {exam?.questions.map((question, index) => (
+                {exam?.questions.map((question, index) =>{
+                  const wrongAnswerData = hasSubmitted ?  wrongAnswers.find(wrongAnswerInfo=>wrongAnswerInfo.questionId === question.id) : null
+                  return  (
           
                     <div className="bg-sky-100 border border-slate-200 w-full rounded-lg p-4 max-w-full ">
                       <div className="w-full flex h-fit flex-col items-end">
@@ -356,10 +360,11 @@ const ExamIdPage = ({
                             </div>
                           ))}
                         </div>
+                        {wrongAnswerData?.lesson ? <div >please take a look at <Link className="font-bold" href={`/courses/${course?.id}/chapters/${wrongAnswerData.lesson.chapterId}/lessons/${wrongAnswerData.lesson.id}`}>{wrongAnswerData.lesson.title}</Link> to learn more </div> : null}
                       </div>
                     </div>
       
-                ))}
+                )})}
             <div className="flex flex-col justify-end items-end w-full space-y-3 mr-12 md:mr-20">
               {hasSubmitted && scorePercentage != undefined ? (
                 <p className="text-right w-1/2">

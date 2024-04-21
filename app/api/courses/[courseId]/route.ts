@@ -28,11 +28,13 @@ export async function GET(
           include: {
             certificate: true,
             questions: {
+
               where: {
                 isPublished: true,
               },
               include: {
                 options: true,
+                lesson : true 
               },
             },
           },
