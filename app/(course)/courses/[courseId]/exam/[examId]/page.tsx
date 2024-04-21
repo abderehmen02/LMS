@@ -84,7 +84,11 @@ const ExamIdPage = ({
     exam && exam.userId !== "nil" && exam.beforeScore;
 
   const hasUserSelections = Object.keys(userSelections).length > 0;
+  
 
+
+
+  console.log("user selectors" , userSelections)
   const handleOptionChange = (questionId: string, optionPosition: number) => {
     setUserSelections((prevSelections) => ({
       ...prevSelections,
@@ -212,7 +216,7 @@ const ExamIdPage = ({
         if (userSelectedPosition === correctAnswerPosition) {
           correct++;
         } else {
-          setWrongAnswers(curr=>[...curr , {questionId :question.id , lesson : question.lesson }])
+          setWrongAnswers(curr=>curr.find(item=>item.questionId=== question.id) ? curr :  [...curr , {questionId :question.id , lesson : question.lesson }])
         }
       }
     });
@@ -222,12 +226,13 @@ const ExamIdPage = ({
     setScorePercentage((correct / totalQuestions) * 100);
 
     // Enable submission when all questions are answered
+    
     setCanSubmit(answered === totalQuestions);
   }, [exam?.questions, userSelections, hasSubmitted]);
 
   useEffect(() => {
     if (answeredQuestions === exam?.questions.length)
-      setCanSubmit((current) => !current);
+      setCanSubmit(answeredQuestions === exam?.questions.length);
   }, [answeredQuestions, exam?.questions.length]);
 
   useEffect(() => {
@@ -265,7 +270,7 @@ const ExamIdPage = ({
   if (!userId) {
     return redirect("/");
   }
-
+console.log("wrong answers" , wrongAnswers)
   return (
     <>
       {exam ? (
@@ -273,7 +278,7 @@ const ExamIdPage = ({
           {hasSubmitted ? (
             <Banner
               variant={wrongAnswers.length > correctAnswers ? "warning" : "success"}
-              label={`Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
+              label={`Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers.length} `}
             />
           ) : (
             <div className="w-full flex flex-col justify-center items-end h-12 pt-12 px-6">
