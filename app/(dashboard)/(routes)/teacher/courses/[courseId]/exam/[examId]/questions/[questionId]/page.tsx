@@ -12,6 +12,8 @@ import { QuestionExplanationForm } from "./_components/question-explanation-form
 import { QuestionActions } from "./_components/question-actions";
 import { QuestionAnswerForm } from "./_components/question-answer-form";
 import { OptionForm } from "./_components/option-form";
+import { Chapter, Lesson } from "@prisma/client";
+import { QuestionLessonForm } from "./_components/question-lesson";
 
 const QuestinoIdPage = async ({
   params,
@@ -23,20 +25,43 @@ const QuestinoIdPage = async ({
   if (!userId) {
     return redirect("/");
   }
+  const allChapters = await db.chapter.findMany({
+    where :{
+       courseId : params.courseId
+    }
+  })
 
-  const question = await db.examQuestion.findUnique({
+  const allLessons :{ lessons : Lesson[] , chapter : Chapter }[] = []
+ await Promise.all(allChapters.map( async chapter=>{ 
+const chapterLessons = await db.lesson.findMany({
+  where : {
+    chapterId : chapter.id 
+  }
+})
+console.log("chapter lessons"  , chapterLessons )
+allLessons.push({chapter , lessons : chapterLessons})
+
+ }))
+ console.log("all lessons" ,   allLessons)
+
+
+  const question = await db.examQuestion.findFirst({
     where: {
       id: params.questionId,
       examId: params.examId,
     },
+    
     include: {
       options: {
         orderBy: {
           position: "asc",
         },
       },
+  
+      lesson : true 
     },
   });
+  console.log("question" ,question)
 
   if (!question) {
     return redirect("/");
@@ -130,6 +155,8 @@ const QuestinoIdPage = async ({
               examId={params.examId}
               questionId={params.questionId}
             />
+            <QuestionLessonForm allLessons={allLessons} courseId={params.courseId}     questionId={params.questionId}    initialData={{lesson : question.lesson || undefined}}      examId={params.examId}
+ />
           </div>
         </div>
       </div>
