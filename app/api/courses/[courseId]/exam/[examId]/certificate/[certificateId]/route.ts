@@ -1,7 +1,8 @@
 import Mux from "@mux/mux-node";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-
+const sendgrid = require("@sendgrid/mail");
+sendgrid.setApiKey(process.env.SEND_GRID_API_KEY);
 import { db } from "@/lib/db";
 
 export async function GET(

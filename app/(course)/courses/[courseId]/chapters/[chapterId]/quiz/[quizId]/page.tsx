@@ -113,9 +113,6 @@ const ExamIdPage = ({
           }
         );
 
-        console.log("====================================");
-        console.log(quizResponse);
-        console.log("====================================");
 
         sethasSubmitted(true);
 
@@ -247,14 +244,7 @@ localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
         setQuiz(chapterResponse.data.quiz);
         setCourse(courseResponse.data);
 
-        console.log("====================================");
-        console.log(chapterResponse.data);
-        console.log(courseResponse.data);
-        console.log("====================================");
       } catch (error) {
-        console.log("====================================");
-        console.log(error);
-        console.log("====================================");
         toast.error("Something went wrong");
       }
     }
