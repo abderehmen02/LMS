@@ -76,10 +76,8 @@ export async function PATCH(
   }: { params: { courseId: string; examId: string; questionId: string } }
 ) {
   try {
-   console.log("calling api")
     const { userId } = auth();
     const { isPublished  , answer , ...values } = await req.json();
-    console.log("values"  ,  values)
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }

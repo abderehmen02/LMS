@@ -39,7 +39,6 @@ const QuizIdPage = async ({
 quiz.questions = quiz.questions.sort((a , b)=>a.position - b.position)
   const requiredFields = [
     quiz.title,
-    quiz.description,
     quiz.questions.some((question) => question.isPublished),
   ];
 

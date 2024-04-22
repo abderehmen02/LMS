@@ -34,6 +34,7 @@ export async function GET(
               },
               include: {
                 options: true,
+                lesson : true 
               },
             },
           },

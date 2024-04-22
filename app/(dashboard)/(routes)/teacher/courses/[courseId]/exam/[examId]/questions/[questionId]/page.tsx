@@ -38,11 +38,9 @@ const chapterLessons = await db.lesson.findMany({
     chapterId : chapter.id 
   }
 })
-console.log("chapter lessons"  , chapterLessons )
 allLessons.push({chapter , lessons : chapterLessons})
 
  }))
- console.log("all lessons" ,   allLessons)
 
 
   const question = await db.examQuestion.findFirst({

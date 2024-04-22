@@ -16,7 +16,7 @@ import { Preview } from "@/components/preview";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useCallback, useEffect, useState } from "react";
-import { Chapter, Course, Prisma } from "@prisma/client";
+import { Chapter, Course, Lesson, Prisma } from "@prisma/client";
 import axios from "axios";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 import { Banner } from "@/components/banner";
@@ -31,6 +31,7 @@ type QuizWithQuestionsAndOptions = Prisma.QuizGetPayload<{
       };
       include: {
         options: true;
+        lesson: true 
       };
     };
   };
@@ -52,7 +53,7 @@ const ExamIdPage = ({
   const [quiz, setQuiz] = useState<QuizWithQuestionsAndOptions | null>();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
+  const [displayWrongAnswerLesson , setDisplayWrongAnswerLesson ] = useState(false)
   const [hasSubmitted, sethasSubmitted] = useState<boolean>(false);
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false);
@@ -69,7 +70,7 @@ const ExamIdPage = ({
 
   const [answeredQuestions, setAnsweredQuestions] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState<{questionId : string , lesson : Lesson | null }[]>([]);
 
   const [points, setPoints] = useState<number>(0);
 
@@ -124,9 +125,10 @@ const ExamIdPage = ({
 
         confetti.onOpen();
       } else {
+        setDisplayWrongAnswerLesson(true )
         sethasSubmitted(false);
-        setUserSelections({});
-        setWrongAnswers(0);
+        // setUserSelections({});
+        // setWrongAnswers([]);
         setCorrectAnswers(0);
         setAnsweredQuestions(0);
 
@@ -219,14 +221,13 @@ localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
         if (userSelectedPosition === correctAnswerPosition) {
           correct++;
         } else {
-          wrong++;
+          setWrongAnswers(curr=>curr.find(item=>item.questionId=== question.id) ? curr :  [...curr , {questionId :question.id , lesson : question.lesson }])
         }
       }
     });
 
     setAnsweredQuestions(answered);
     setCorrectAnswers(correct);
-    setWrongAnswers(wrong);
     setPoints((correct / totalQuestions) * 100);
 
     // Enable submission when all questions are answered
@@ -264,15 +265,15 @@ localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
   if (!userId) {
     return redirect("/");
   }
-
+console.log("wrong" , wrongAnswers)
   return (
     <>
       {quiz ? (
         <div>
           {hasSubmitted ? (
             <Banner
-              variant={wrongAnswers > correctAnswers ? "warning" : "success"}
-              label={`Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers} `}
+              variant={wrongAnswers.length > correctAnswers ? "warning" : "success"}
+              label={`Correct Answers: ${correctAnswers}    |    Wrong Answers: ${wrongAnswers.length} `}
             />
           ) : (
             <div className="w-full flex flex-col justify-center items-end h-12 pt-12 px-6">
@@ -300,7 +301,10 @@ localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
 
           <div className="flex flex-col px-10 mt-10 items-center relative">
             <div className="w-[98%] md:w-[95%] flex flex-col gap-4 p-4 mb-3 ">
-                {quiz?.questions.map((question, index) => (
+                {quiz?.questions.map((question, index) => {
+                                    const wrongAnswerData =  wrongAnswers?.find(wrongAnswerInfo=>wrongAnswerInfo.questionId === question.id) 
+
+                  return (
                   <div>
                     <div className="bg-sky-100 border border-slate-200 rounded-lg p-4 max-w-full ">
                       <div className="w-full flex h-fit flex-col items-end">
@@ -354,10 +358,12 @@ localStorage.setItem(`${quiz?.id}-time`  , String(timeRemaining))
                             </div>
                           ))}
                         </div>
+                        { (displayWrongAnswerLesson &&  wrongAnswerData?.lesson ) ? <div >please take a look at <Link className="font-bold" href={`/courses/${course?.id}/chapters/${wrongAnswerData.lesson.chapterId}/lessons/${wrongAnswerData.lesson.id}`}>{wrongAnswerData.lesson.title}</Link> to learn more </div> : null}
+
                       </div>
                     </div>
                   </div>
-                ))}
+                )})}
             </div>
             <div className="flex flex-col justify-end items-end w-full space-y-3 mr-12 md:mr-20">
               {hasSubmitted && points != undefined ? (
