@@ -10,6 +10,7 @@ const nextConfig = {
       },
     ],
     domains: ["utfs.io"],
+
   },
 };
 

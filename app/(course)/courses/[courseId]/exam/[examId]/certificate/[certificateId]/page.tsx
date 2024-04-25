@@ -4,10 +4,45 @@ import { useEffect, useRef, useState } from "react";
 import { htmlToPdf } from "@/lib/html-to-pdf";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { useAuth } from "@clerk/nextjs";
+import {   useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import axios from "axios";
 import { Certificate } from "@prisma/client";
+
+
+
+
+
+// const sendEmail  = async  (blobFile : Blob , email : string )=>{
+//   const arrayBuffer = await  blobFile.arrayBuffer()
+//   const buffer = Buffer.from(arrayBuffer)
+//   const msg = {
+//     to: email ,
+//     from: "roamiocityexplorer@gmail.com", // Use the email address or domain you verified above
+//     subject: ` Certaficate`,
+//     text: `you can download the pdf certaficate from here`,
+//     html: `you can download the pdf certaficate from here`,
+//     attachments: [
+//         {
+//           content: buffer.toString("base64"),
+//           filename: "attachment.pdf",
+//           type: "application/pdf",
+//           disposition: "attachment"
+//         }
+//       ]
+//   };
+//   sgMail.send(msg)
+// .then(() => {}, (error : any)=> {
+// console.error( "error when sending email" , error);
+
+// if (error.response) {
+//   console.error(error.response.body)
+// }
+// });
+
+// }
+
+
 
 const CertificatePage = ({
   params,
@@ -15,9 +50,9 @@ const CertificatePage = ({
   params: { courseId: string; examId: string; certificateId: string };
 }) => {
   const htmlRef = useRef<HTMLDivElement>(null);
-
-  const { userId } = useAuth();
-
+  const [temp, setTemp] = useState(0)
+  const { userId   } = useAuth();
+  
   const [certificate, setCertificate] = useState<Certificate>();
 
   const [isGettingCertificate, setisGettingCertificate] = useState(false);
@@ -51,9 +86,34 @@ const CertificatePage = ({
     })();
   }, [params.certificateId, params.courseId, params.examId]);
 
+
+useEffect(()=>{
+setTimeout(async ()=>{
+  if(!htmlRef.current) return
+  const pdfBlob = await htmlToPdf(htmlRef.current);
+  console.log("pdf blob" , pdfBlob)
+  const formData = new FormData()
+  const reader = new FileReader()
+  reader.readAsDataURL(pdfBlob as Blob); 
+  reader.onloadend = function(e) {
+
+    var base64data = reader.result;   
+    console.log("base64" , e.target?.result)             
+    axios.post("/api/sendMail" , {file : e.target?.result } )
+  }
+  
+  formData.append("file"  , pdfBlob  as Blob)
+ 
+} , 2000 )
+} , [] )
+
+
   if (!userId) {
     return redirect("/");
   }
+
+
+
 
   const handleDownload = async () => {
     if (!htmlRef.current) {
@@ -63,7 +123,9 @@ const CertificatePage = ({
 
     try {
       const pdfBlob = await htmlToPdf(htmlRef.current);
+      console.log("pdf blog" ,pdfBlob)
       const url = URL.createObjectURL(pdfBlob as Blob);
+      console.log("url" , url)
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", "certificate.pdf");

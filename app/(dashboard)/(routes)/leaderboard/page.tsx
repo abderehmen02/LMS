@@ -31,7 +31,6 @@ const Leaderboard = async () => {
       totalPoints: number;
     };
   } = {};
-
   const points = await db.userQuizPoints.findMany({
     orderBy: {
       points: "desc",
@@ -43,6 +42,7 @@ const Leaderboard = async () => {
   for (const point of points) {
     const userEntry = usersQuizCounts[point.userId];
     if (!userEntry) {
+      console.log("pont user" , point)
       // First time encountering this user
       const user: User = await clerkClient.users.getUser(point.userId);
       const fullName =
