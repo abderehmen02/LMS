@@ -2,18 +2,16 @@ import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 const sgMail = require('@sendgrid/mail');
 import { db } from "@/lib/db";
+import { NextApiRequest, NextApiResponse } from "next";
+import nodemailer from "nodemailer"
+import formidable from "formidable";
 
 
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
 
-// async function generatePdf(htmlContent : string) {
-//   return new Promise((resolve, reject) => {
-//       html_to_pdf.generatePdf({ content: htmlContent } , {format : "A4"} ).then((buffer   : Buffer)=>{
-//         resolve(buffer)
-//       })
-//   });
-// }
+
+
 
 export async function POST(
   req: Request,
@@ -115,8 +113,8 @@ export async function POST(
         to: userEmail ,
         from: "roamiocityexplorer@gmail.com", // Use the email address or domain you verified above
         subject: `${certificate.courseTitle} Certaficate`,
-        text: `Congratulation! ${user.firstName} , you have succussfully completed ${certificate.courseTitle} course  , please click here to see and download your certaficate : ${process.env.NEXT_PUBLIC_APP_URL}/courses/${exam.courseId}/exam/${exam.id}/certificate/${certificate.id}`,
-        html: htmlContent,
+        text: `you can get your certaficate on this link : ${process.env.NEXT_PUBLIC_APP_URL}/courses/${exam.courseId}/exam/${exam.id}/certificate/${certificate.id}`,
+        html: `you can get your certaficate on this link : ${process.env.NEXT_PUBLIC_APP_URL}/courses/${exam.courseId}/exam/${exam.id}/certificate/${certificate.id}`,
       };
       sgMail.send(msg)
   .then(() => {}, (error : any)=> {
